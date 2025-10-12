@@ -6,7 +6,7 @@ function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-10 pb-6 px-6 md:px-16">
       {/* 🔹 Top Section */}
-      <div className="grid md:grid-cols-3 gap-8 border-b border-gray-700 pb-8">
+      <div className="grid md:grid-cols-2 gap-8 border-b border-gray-700 pb-8">
         
         {/* Follow Us */}
         <div>
@@ -19,24 +19,6 @@ function Footer() {
             <a href="#" className="hover:text-blue-500"><FaFacebookF /></a>
             <a href="#" className="hover:text-blue-500"><FaTwitter /></a>
             <a href="#" className="hover:text-blue-500"><FaYoutube /></a>
-          </div>
-        </div>
-
-        {/* Download App */}
-        <div>
-          <h2 className="text-white text-lg font-semibold mb-4">Download App</h2>
-          <p className="text-sm mb-4">
-            E-Com App is now available on App Store and Google Play. Get it now!
-          </p>
-          <div className="flex space-x-4">
-            <button className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg">
-              <SiAppstore className="text-white text-xl" />
-              <span>App Store</span>
-            </button>
-            <button className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg">
-              <SiGoogleplay className="text-white text-xl" />
-              <span>Google Play</span>
-            </button>
           </div>
         </div>
 
