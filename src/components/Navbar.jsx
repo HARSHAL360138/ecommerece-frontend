@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+
+
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import ProfileModel from "./ProfileModel";
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isModelOpen, setIsModelOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Home");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
+
   const categories = [
     "New Arrivals",
     "Men",
@@ -11,16 +21,67 @@ const Navbar = () => {
     "Footwear",
     "Sale",
   ];
+
+  // Check login state on mount
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+    if (token && user) {
+      setIsLoggedIn(true);
+      setUserName(JSON.parse(user).name);
+    } else {
+      setIsLoggedIn(false);
+      setUserName("");
+    }
+  }, []);
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false); // immediately update navbar
+    setUserName("");
+    setIsModelOpen(false);
+    // navigate("/login"); // redirect to login
+    navigate("/hero-section"); // redirect to login
+  };
+
   return (
     <nav className="w-full border-b bg-white shadow-sm font-sans">
       {/* Top Section */}
-
       <div className="flex justify-between items-center bg-gray-100 px-4 py-2 text-xs">
-        <div className="space-x-2">
-          <a href="#" className="hover:text-blue-600">Hi! Sign in</a>
-          <span>or</span>
-          <a href="#" className="hover:text-blue-600">Register</a>
-        </div>
+        {/* Sign in / Register */}
+        {!isLoggedIn && (
+          <div className="space-x-2">
+            <Link to="/login" className="hover:text-blue-600">
+              Hi! Sign in
+            </Link>
+            <span>or</span>
+            <Link to="/signup" className="hover:text-blue-600">
+              Register
+            </Link>
+          </div>
+        )}
+
+        {/* Profile Button */}
+        {isLoggedIn && (
+          <div className="flex justify-end items-center gap-2 relative">
+            <button
+              onClick={() => setIsModelOpen(!isModelOpen)}
+              className="flex items-center gap-2 hover:text-blue-600"
+            >
+              Hi {userName} ▼
+            </button>
+
+            <ProfileModel
+              isOpen={isModelOpen}
+              onClose={() => setIsModelOpen(false)}
+              onLogout={handleLogout} // pass logout callback
+            />
+          </div>
+        )}
+
         <div className="hidden sm:flex space-x-4">
           <a href="#" className="hover:text-blue-600">Daily Deals</a>
           <a href="#" className="hover:text-blue-600">Gift Cards</a>
@@ -29,7 +90,6 @@ const Navbar = () => {
       </div>
 
       {/* Main Section */}
-
       <div className="flex items-center justify-between px-4 py-3 md:px-8">
         {/* Logo */}
         <div className="text-4xl font-bold text-blue-600">
@@ -106,5 +166,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
