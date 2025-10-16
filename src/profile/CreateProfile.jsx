@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { fetchWithAuth } from "../refreshtoken/api"; // adjust path if needed
-import {
-  FaPhone,
-  FaUser,
-  FaBirthdayCake,
-  FaMapMarkerAlt,
-  FaGlobe,
-  FaVenusMars,
-  FaImage,
-} from "react-icons/fa";
 
-function ProfileForm() {
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../refreshtoken/api";
+import { FaPhone, FaUser, FaBirthdayCake, FaMapMarkerAlt, FaGlobe, FaVenusMars, FaImage } from "react-icons/fa";
+
+function CreateProfile({ onProfileCreated }) {
   const [formData, setFormData] = useState({
     phone: "",
     gender: "",
@@ -29,25 +22,7 @@ function ProfileForm() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
   const navigate = useNavigate();
-
-  // Load existing profile if available
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await fetchWithAuth("http://localhost:5000/api/user/get-profile");
-        if (data && data.profile) {
-          setFormData(data.profile);
-          setIsEditMode(true);
-        }
-      } catch (err) {
-        console.log("No existing profile, stay in create mode.");
-      }
-    };
-
-    fetchProfile();
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,24 +45,22 @@ function ProfileForm() {
     setLoading(true);
 
     try {
-      const url = isEditMode
-        ? "http://localhost:5000/api/user/edit-profile"
-        : "http://localhost:5000/api/user/create-profile";
-
-      const method = isEditMode ? "PUT" : "POST";
-
-      const res = await fetchWithAuth(url, {
-        method,
-        body: JSON.stringify(formData),
-      });
+      const res = await fetchWithAuth(
+        "https://ecommerce-backend-y1bv.onrender.com/api/user/create-profile",
+        {
+          method: "POST",
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (res) {
-        alert(isEditMode ? "Profile updated successfully!" : "Profile created successfully!");
-        navigate("/home");
+        alert("Profile created successfully!");
+        // Notify wrapper that profile is created
+        if (onProfileCreated) onProfileCreated();
       }
     } catch (err) {
-      console.error("Profile submission failed:", err);
-      alert("Failed to submit profile. Please try again.");
+      console.error("Profile creation failed:", err);
+      alert("Failed to create profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -100,7 +73,7 @@ function ProfileForm() {
         className="bg-white shadow-xl rounded-2xl max-w-xl w-full p-8 sm:p-10 transition-transform transform hover:-translate-y-1"
       >
         <h2 className="text-3xl font-bold mb-8 text-center text-blue-600">
-          {isEditMode ? "Edit Profile" : "Create Profile"}
+          Create Your Profile
         </h2>
 
         {/* Phone */}
@@ -140,14 +113,14 @@ function ProfileForm() {
           <input
             type="date"
             name="dateOfBirth"
-            value={formData.dateOfBirth.slice(0, 10)}
+            value={formData.dateOfBirth}
             onChange={handleChange}
             className="w-full outline-none"
             required
           />
         </div>
 
-        {/* Profile Image */}
+        {/* Profile Image URL */}
         <div className="flex items-center border rounded-md p-2 mb-4 focus-within:ring-2 focus-within:ring-blue-400">
           <FaImage className="text-gray-400 mr-2" />
           <input
@@ -169,7 +142,7 @@ function ProfileForm() {
             type="text"
             name="street"
             placeholder="Street"
-            value={formData.addresses[0]?.street || ""}
+            value={formData.addresses[0].street}
             onChange={handleChange}
             className="w-full outline-none"
           />
@@ -182,7 +155,7 @@ function ProfileForm() {
             type="text"
             name="city"
             placeholder="City"
-            value={formData.addresses[0]?.city || ""}
+            value={formData.addresses[0].city}
             onChange={handleChange}
             className="w-full outline-none"
           />
@@ -195,7 +168,7 @@ function ProfileForm() {
             type="text"
             name="state"
             placeholder="State"
-            value={formData.addresses[0]?.state || ""}
+            value={formData.addresses[0].state}
             onChange={handleChange}
             className="w-full outline-none"
           />
@@ -208,7 +181,7 @@ function ProfileForm() {
             type="text"
             name="postalCode"
             placeholder="Postal Code"
-            value={formData.addresses[0]?.postalCode || ""}
+            value={formData.addresses[0].postalCode}
             onChange={handleChange}
             className="w-full outline-none"
           />
@@ -221,7 +194,7 @@ function ProfileForm() {
             type="text"
             name="country"
             placeholder="Country"
-            value={formData.addresses[0]?.country || ""}
+            value={formData.addresses[0].country}
             onChange={handleChange}
             className="w-full outline-none"
           />
@@ -233,11 +206,11 @@ function ProfileForm() {
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50 text-lg font-semibold"
         >
-          {loading ? (isEditMode ? "Updating..." : "Creating...") : isEditMode ? "Update Profile" : "Create Profile"}
+          {loading ? "Creating..." : "Create Profile"}
         </button>
       </form>
     </div>
   );
 }
 
-export default ProfileForm;
+export default CreateProfile;

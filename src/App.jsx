@@ -10,11 +10,10 @@ import Logout from "./pages/Logout";
 import Signup from "./pages/Signup";
 import ProfileModel from "./components/ProfileModel";
 import HeroSection from "./components/HeroSection";
-import CreateProfile from "./components/CreateProfile";
-import GetProfile from "./components/GetProfile";
-import EditProfile from "./components/EditProfile";
-import ProfileForm from "./components/ProfileForm";
-import ProfileWrapper from "./components/ProfileWrapper";
+import CreateProfile from "./profile/CreateProfile";
+import GetProfile from "./profile/GetProfile";
+import EditProfile from "./profile/EditProfile";
+import ProfileWrapper from "./profile/ProfileWrapper";
 
 // Protected Route (for fully restricted pages)
 const ProtectedRoute = ({ children }) => {
@@ -42,13 +41,20 @@ function App() {
         <Route path="/signup" element={ <PublicRoute> <Signup /> </PublicRoute>}/>
         <Route path="/profile" element={<ProfileModel />} />
         <Route path="/hero-section" element={<HeroSection />} />
+
+
         {/* Home should show only after login */}
         <Route path="/home" element={ <ProtectedRoute> <Home /> </ProtectedRoute>}/>
+
+
+        {/* Profile Routes Start */}
         <Route path="/create-profile" element={<ProtectedRoute><CreateProfile /></ProtectedRoute>} />
         <Route path="/get-profile" element={<ProtectedRoute><GetProfile /></ProtectedRoute>} />
         <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-        <Route path="/form-profile" element={<ProtectedRoute><ProfileForm /></ProtectedRoute>} />
         <Route path="/profile-wrapper" element={<ProtectedRoute><ProfileWrapper/></ProtectedRoute>} />
+        {/* Profile Routes End */}
+
+
         <Route path="/logout" element={<ProtectedRoute> <Logout /> </ProtectedRoute>}/>
       </Routes>
       {!hideNavFooter && <Footer />}
