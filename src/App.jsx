@@ -7,13 +7,14 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
-import Signup from "./pages/Signup";
+
 import ProfileModel from "./components/ProfileModel";
 import HeroSection from "./components/HeroSection";
 import CreateProfile from "./profile/CreateProfile";
 import GetProfile from "./profile/GetProfile";
 import EditProfile from "./profile/EditProfile";
 import ProfileWrapper from "./profile/ProfileWrapper";
+import Signup from "./pages/SignUp";
 
 // Protected Route (for fully restricted pages)
 const ProtectedRoute = ({ children }) => {
