@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useEffect, useState } from "react";
 import Logout from "../pages/Logout";
 
@@ -11,35 +7,49 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!isOpen) return; // fetch only when modal opens
+    if (!isOpen) return;
 
-    const token = localStorage.getItem("accessToken");
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        setError("No access token found.");
+        setLoading(false);
+        return;
+      }
 
-    fetch("https://ecommerce-backend-y1bv.onrender.com/api/user/profile", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((data) => {
-        setProfile({ name: data.name, email: data.email });
+      try {
+        const res = await fetch(
+          "https://ecommerce-backend-y1bv.onrender.com/api/user/profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`Network response was not ok (${res.status})`);
+        }
+
+        const data = await res.json();
+        setProfile({ name: data.name || "User", email: data.email || "N/A" });
+      } catch (err) {
+        console.error("Profile fetch failed:", err);
+        setError("Failed to fetch profile. Please try again.");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchProfile();
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0  z-50 flex justify-start items-start mt-3">
-      {/* Modal box moved to top-left */}
+    <div className="fixed inset-0 z-50 flex justify-start items-start mt-3">
       <div className="bg-white rounded-lg p-6 w-80 relative mt-4 ml-4 shadow-lg">
         <button
           onClick={onClose}
@@ -62,7 +72,7 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
               <li
                 className="py-2 cursor-pointer"
                 onClick={() => {
-                  onLogout(); // call the logout function from Navbar
+                  onLogout();
                   onClose();
                 }}
               >

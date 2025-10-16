@@ -1,44 +1,3 @@
-// import React from "react";
-// import { Route, Routes } from "react-router-dom";
-// import "./App.css";
-// import Home from "./pages/Home";
-// import Navbar from "./components/Navbar";
-// import Footer from "./components/Footer";
-// import HeroSection from "./components/HeroSection";
-
-// function App() {
-//   return (
-//    <>
-//    <Navbar/>
-//    <Routes>
-//      <Route path="/" element={<>
-//      <Home />
-//      </>
-//     }></Route>
-//    </Routes>
-//    <Footer/>
-//    </>
-//   );
-// }
-
-
-// export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
@@ -50,12 +9,10 @@ import Logout from "./pages/Logout";
 import SignUp from "./pages/SignUp";
 import ProfileModel from "./components/ProfileModel";
 
-// Wrapper component for handling click restriction on Home
 const HomeWrapper = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("accessToken");
 
-  // If not logged in, block clicks and redirect to /login on any click
   const handleOverlayClick = () => {
     if (!token) {
       navigate("/login");
@@ -65,7 +22,6 @@ const HomeWrapper = () => {
   return (
     <div style={{ position: "relative" }}>
       <Home />
-
       {!token && (
         <div
           onClick={handleOverlayClick}
@@ -76,7 +32,6 @@ const HomeWrapper = () => {
             width: "100%",
             height: "100%",
             backgroundColor: "rgba(255, 255, 255, 0)",
-            cursor: "allow",
             zIndex: 10,
           }}
         />
@@ -85,25 +40,25 @@ const HomeWrapper = () => {
   );
 };
 
-// Protected Route (for fully restricted pages)
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("accessToken");
-  return token ? children : <Navigate to="/home" replace />;
+  return token ? children : <Navigate to="/login" replace />;
 };
 
 function App() {
-    const location = useLocation();
+  const location = useLocation();
   const hideNavFooter = location.pathname === "/login" || location.pathname === "/signup";
+
   return (
     <>
-     {!hideNavFooter && <Navbar />}
+      {!hideNavFooter && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<ProfileModel />} />
         <Route path="/home" element={<HomeWrapper />} />
-        <Route path="/logout" element={ <ProtectedRoute><Logout /></ProtectedRoute> } />
+        <Route path="/logout" element={<ProtectedRoute><Logout /></ProtectedRoute>} />
       </Routes>
       {!hideNavFooter && <Footer />}
     </>
@@ -111,19 +66,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileModel from "./ProfileModel";
@@ -22,7 +20,6 @@ const Navbar = () => {
     "Sale",
   ];
 
-  // Check login state on mount
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const user = localStorage.getItem("user");
@@ -35,23 +32,19 @@ const Navbar = () => {
     }
   }, []);
 
-  // Logout function
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-    setIsLoggedIn(false); // immediately update navbar
+    setIsLoggedIn(false);
     setUserName("");
     setIsModelOpen(false);
-    // navigate("/login"); // redirect to login
-    navigate("/hero-section"); // redirect to login
+    navigate("/hero-section");
   };
 
   return (
     <nav className="w-full border-b bg-white shadow-sm font-sans">
-      {/* Top Section */}
       <div className="flex justify-between items-center bg-gray-100 px-4 py-2 text-xs">
-        {/* Sign in / Register */}
         {!isLoggedIn && (
           <div className="space-x-2">
             <Link to="/login" className="hover:text-blue-600">
@@ -64,7 +57,6 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Profile Button */}
         {isLoggedIn && (
           <div className="flex justify-end items-center gap-2 relative">
             <button
@@ -73,11 +65,10 @@ const Navbar = () => {
             >
               Hi {userName} ▼
             </button>
-
             <ProfileModel
               isOpen={isModelOpen}
               onClose={() => setIsModelOpen(false)}
-              onLogout={handleLogout} // pass logout callback
+              onLogout={handleLogout}
             />
           </div>
         )}
@@ -89,14 +80,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Main Section */}
       <div className="flex items-center justify-between px-4 py-3 md:px-8">
-        {/* Logo */}
         <div className="text-4xl font-bold text-blue-600">
           <a href="#">FashioHub</a>
         </div>
 
-        {/* Shop by Category */}
         <select className="hidden md:block border rounded px-3 py-2 text-sm focus:outline-none hover:border-blue-600">
           <option>Shop by Category</option>
           {categories.map((cat) => (
@@ -104,7 +92,6 @@ const Navbar = () => {
           ))}
         </select>
 
-        {/* Search Bar */}
         <div className="flex flex-1 max-w-3xl mx-4">
           <input
             type="text"
@@ -116,7 +103,6 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden p-2 border rounded hover:bg-gray-100"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -125,7 +111,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Categories Bottom Section (Desktop) */}
       <div className="hidden md:flex justify-center space-x-6 bg-gray-50 py-2 border-t text-sm">
         {categories.map((cat) => (
           <button
@@ -142,7 +127,6 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden flex flex-col bg-gray-50 border-t p-3 space-y-2 text-sm">
           {categories.map((cat) => (
@@ -153,7 +137,9 @@ const Navbar = () => {
                 setMenuOpen(false);
               }}
               className={`text-left ${
-                activeCategory === cat ? "text-blue-600 font-semibold" : "text-gray-700"
+                activeCategory === cat
+                  ? "text-blue-600 font-semibold"
+                  : "text-gray-700"
               }`}
             >
               {cat}
