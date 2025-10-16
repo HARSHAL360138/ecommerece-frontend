@@ -157,7 +157,7 @@ const Navbar = () => {
 
       <div className="flex items-center justify-between px-4 py-3 md:px-8">
         <div className="text-4xl font-bold text-blue-600">
-          <a href="#">FashioHub</a>
+          <a href="#">FashionHub</a>
         </div>
 
         <select className="hidden md:block border rounded px-3 py-2 text-sm focus:outline-none hover:border-blue-600">

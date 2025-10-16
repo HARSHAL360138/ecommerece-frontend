@@ -10,6 +10,11 @@ import Logout from "./pages/Logout";
 import Signup from "./pages/Signup";
 import ProfileModel from "./components/ProfileModel";
 import HeroSection from "./components/HeroSection";
+import CreateProfile from "./components/CreateProfile";
+import GetProfile from "./components/GetProfile";
+import EditProfile from "./components/EditProfile";
+import ProfileForm from "./components/ProfileForm";
+import ProfileWrapper from "./components/ProfileWrapper";
 
 // Protected Route (for fully restricted pages)
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +44,11 @@ function App() {
         <Route path="/hero-section" element={<HeroSection />} />
         {/* Home should show only after login */}
         <Route path="/home" element={ <ProtectedRoute> <Home /> </ProtectedRoute>}/>
+        <Route path="/create-profile" element={<ProtectedRoute><CreateProfile /></ProtectedRoute>} />
+        <Route path="/get-profile" element={<ProtectedRoute><GetProfile /></ProtectedRoute>} />
+        <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+        <Route path="/form-profile" element={<ProtectedRoute><ProfileForm /></ProtectedRoute>} />
+        <Route path="/profile-wrapper" element={<ProtectedRoute><ProfileWrapper/></ProtectedRoute>} />
         <Route path="/logout" element={<ProtectedRoute> <Logout /> </ProtectedRoute>}/>
       </Routes>
       {!hideNavFooter && <Footer />}
