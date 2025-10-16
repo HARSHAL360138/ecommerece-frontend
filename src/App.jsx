@@ -7,7 +7,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
-import SignUp from "./pages/SignUp";
+import Signup from "./pages/Signup";
 import ProfileModel from "./components/ProfileModel";
 import HeroSection from "./components/HeroSection";
 
@@ -34,7 +34,7 @@ function App() {
         {/* Default route — show HeroSection first */}
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={ <PublicRoute> <Login /> </PublicRoute>}/>
-        <Route path="/signup" element={ <PublicRoute> <SignUp /> </PublicRoute>}/>
+        <Route path="/signup" element={ <PublicRoute> <Signup /> </PublicRoute>}/>
         <Route path="/profile" element={<ProfileModel />} />
         <Route path="/hero-section" element={<HeroSection />} />
         {/* Home should show only after login */}
