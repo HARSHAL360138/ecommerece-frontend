@@ -25,9 +25,9 @@ function Login() {
 
       if (res.status === 200 && res.data.accessToken) {
         localStorage.setItem("accessToken", res.data.accessToken);
+        localStorage.setItem("refreshToken", res.data.refreshToken);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/home");
-        window.location.reload();
       } else {
         throw new Error("Invalid response");
       }

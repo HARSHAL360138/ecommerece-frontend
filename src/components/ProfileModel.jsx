@@ -12,7 +12,7 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
     const fetchProfile = async () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        setError("No access token found.");
+        setError("Not logged in");
         setLoading(false);
         return;
       }
@@ -28,16 +28,11 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
             },
           }
         );
-
-        if (!res.ok) {
-          throw new Error(`Network response was not ok (${res.status})`);
-        }
-
+        if (!res.ok) throw new Error("Failed to fetch profile");
         const data = await res.json();
-        setProfile({ name: data.name || "User", email: data.email || "N/A" });
+        setProfile({ name: data.name, email: data.email });
       } catch (err) {
-        console.error("Profile fetch failed:", err);
-        setError("Failed to fetch profile. Please try again.");
+        setError(err.message);
       } finally {
         setLoading(false);
       }

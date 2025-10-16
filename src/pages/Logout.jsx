@@ -10,13 +10,10 @@ function Logout() {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-
       await axios.post(
         "https://ecommerce-backend-y1bv.onrender.com/api/user/logout",
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (error) {
       console.error("Logout failed:", error);

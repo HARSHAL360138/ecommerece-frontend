@@ -20,18 +20,86 @@ const Navbar = () => {
     "Sale",
   ];
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    const user = localStorage.getItem("user");
-    if (token && user) {
-      setIsLoggedIn(true);
-      setUserName(JSON.parse(user).name);
-    } else {
-      setIsLoggedIn(false);
-      setUserName("");
+  // 🔄 Refresh token function
+  const refreshAccessToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) return false;
+
+      const res = await fetch(
+        "https://ecommerce-backend-y1bv.onrender.com/api/user/refresh",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Refresh failed");
+
+      const data = await res.json();
+      if (data.accessToken) {
+        localStorage.setItem("accessToken", data.accessToken);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Token refresh failed:", err);
+      return false;
     }
+  };
+
+  // ✅ Validate or refresh token on mount
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = localStorage.getItem("accessToken");
+      const user = localStorage.getItem("user");
+
+      if (!token || !user) {
+        setIsLoggedIn(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          "https://ecommerce-backend-y1bv.onrender.com/api/user/profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (res.status === 401) {
+          // Access token expired → try refresh
+          const refreshed = await refreshAccessToken();
+          if (refreshed) {
+            return checkLogin(); // retry once after refreshing
+          } else {
+            throw new Error("Refresh token invalid");
+          }
+        }
+
+        if (!res.ok) throw new Error("Profile fetch failed");
+        const data = await res.json();
+
+        setIsLoggedIn(true);
+        setUserName(data.name || JSON.parse(user).name);
+      } catch (err) {
+        console.error("Auto-login failed:", err);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLogin();
   }, []);
 
+  // 🚪 Logout
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -65,6 +133,7 @@ const Navbar = () => {
             >
               Hi {userName} ▼
             </button>
+
             <ProfileModel
               isOpen={isModelOpen}
               onClose={() => setIsModelOpen(false)}
@@ -74,9 +143,15 @@ const Navbar = () => {
         )}
 
         <div className="hidden sm:flex space-x-4">
-          <a href="#" className="hover:text-blue-600">Daily Deals</a>
-          <a href="#" className="hover:text-blue-600">Gift Cards</a>
-          <a href="#" className="hover:text-blue-600">Help & Contact</a>
+          <a href="#" className="hover:text-blue-600">
+            Daily Deals
+          </a>
+          <a href="#" className="hover:text-blue-600">
+            Gift Cards
+          </a>
+          <a href="#" className="hover:text-blue-600">
+            Help & Contact
+          </a>
         </div>
       </div>
 

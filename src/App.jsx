@@ -14,9 +14,7 @@ const HomeWrapper = () => {
   const token = localStorage.getItem("accessToken");
 
   const handleOverlayClick = () => {
-    if (!token) {
-      navigate("/login");
-    }
+    if (!token) navigate("/login");
   };
 
   return (
@@ -47,7 +45,8 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   const location = useLocation();
-  const hideNavFooter = location.pathname === "/login" || location.pathname === "/signup";
+  const hideNavFooter =
+    location.pathname === "/login" || location.pathname === "/signup";
 
   return (
     <>
@@ -58,7 +57,10 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<ProfileModel />} />
         <Route path="/home" element={<HomeWrapper />} />
-        <Route path="/logout" element={<ProtectedRoute><Logout /></ProtectedRoute>} />
+        <Route
+          path="/logout"
+          element={<ProtectedRoute><Logout /></ProtectedRoute>}
+        />
       </Routes>
       {!hideNavFooter && <Footer />}
     </>
