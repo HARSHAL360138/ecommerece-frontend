@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-function SignUp() {
+function Signup() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -106,4 +106,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Signup;

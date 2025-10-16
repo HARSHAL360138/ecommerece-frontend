@@ -14,7 +14,7 @@ import CreateProfile from "./profile/CreateProfile";
 import GetProfile from "./profile/GetProfile";
 import EditProfile from "./profile/EditProfile";
 import ProfileWrapper from "./profile/ProfileWrapper";
-import SignUp from "./pages/SignUp";
+import Signup from "./pages/Signup";
 
 // Protected Route (for fully restricted pages)
 const ProtectedRoute = ({ children }) => {
@@ -39,7 +39,7 @@ function App() {
         {/* Default route — show HeroSection first */}
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={ <PublicRoute> <Login /> </PublicRoute>}/>
-        <Route path="/signup" element={ <PublicRoute> <SignUp /> </PublicRoute>}/>
+        <Route path="/signup" element={ <PublicRoute> <Signup /> </PublicRoute>}/>
         <Route path="/profile" element={<ProfileModel />} />
         <Route path="/hero-section" element={<HeroSection />} />
 
