@@ -1,3 +1,4 @@
+// src/components/LandingPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Truck, PackageCheck, Award } from "lucide-react";
@@ -41,12 +42,11 @@ export default function LandingPage() {
   };
 
   const categories = [
-    { name: "Men", image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3b9c?auto=format&fit=crop&w=600&q=80" },
-    { name: "Women", image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=600&q=80" },
-    { name: "Kids", image: "https://images.unsplash.com/photo-1607346256330-dee7a4a06b63?auto=format&fit=crop&w=600&q=80" },
-    { name: "Accessories", image: "https://images.unsplash.com/photo-1618354691373-d851c5c6e9a4?auto=format&fit=crop&w=600&q=80" },
-    { name: "Footwear", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80" },
-    { name: "Sale", image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=600&q=80" },
+    { name: "Men", image: "https://via.placeholder.com/400x500?text=Men" },
+    { name: "Women", image: "https://via.placeholder.com/400x500?text=Women" },
+    { name: "Kids", image: "https://via.placeholder.com/400x500?text=Kids" },
+    { name: "Accessories", image: "https://via.placeholder.com/400x500?text=Accessories" },
+    { name: "Footwear Sale", image: "https://via.placeholder.com/400x500?text=Footwear+Sale" },
   ];
 
   return (
@@ -97,6 +97,7 @@ export default function LandingPage() {
           </motion.div>
         </AnimatePresence>
 
+        {/* Indicators */}
         <div className="absolute bottom-4 w-full flex justify-center gap-2">
           {slides.map((_, i) => (
             <button
@@ -133,35 +134,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* NEW ARRIVALS */}
-      <section
-        className="relative bg-fixed bg-center bg-cover py-20 text-white text-center"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1521334884684-d80222895322?auto=format&fit=crop&w=1600&q=80')" }}
-      >
-        <div className="absolute inset-0 bg-[#002349]/50" />
-        <div className="relative z-10">
-          <motion.h2
-            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-[#957C3D]"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            #NewArrivals
-          </motion.h2>
-          <p className="text-lg text-gray-200 max-w-2xl mx-auto mb-6">
-            Discover the latest fashion trends and exclusive new arrivals.
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            className="bg-gradient-to-r from-[#002349] to-[#957C3D] text-white px-6 py-3 rounded-full font-semibold"
-          >
-            Shop Now
-          </motion.button>
-        </div>
-      </section>
-
       {/* OUR PRODUCTS */}
-      <section className="py-16 max-w-7xl mx-auto px-6 text-center bg-[#EFFAFD]">
+      {/* <section className="py-16 max-w-7xl mx-auto px-6 text-center bg-[#EFFAFD]">
         <motion.h2
           className="text-3xl sm:text-4xl font-bold mb-10 text-[#002349]"
           initial={{ opacity: 0, y: 30 }}
@@ -171,49 +145,8 @@ export default function LandingPage() {
         </motion.h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-          {[
-            {
-              name: "Men’s Casual Shirt",
-              price: 75,
-              image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3b9c?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Women’s Floral Dress",
-              price: 120,
-              image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Kids Hoodie",
-              price: 60,
-              image: "https://images.unsplash.com/photo-1607346256330-dee7a4a06b63?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Stylish Handbag",
-              price: 130,
-              image: "https://images.unsplash.com/photo-1618354691373-d851c5c6e9a4?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Running Sneakers",
-              price: 95,
-              image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Leather Belt",
-              price: 45,
-              image: "https://images.unsplash.com/photo-1618354606161-c92d84cdbf71?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Men’s Denim Jeans",
-              price: 110,
-              image: "https://images.unsplash.com/photo-1618354691880-782c4cb6ac56?auto=format&fit=crop&w=600&q=80",
-            },
-            {
-              name: "Women’s Sunglasses",
-              price: 85,
-              image: "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=600&q=80",
-            },
-          ].map((product, i) => (
-            <ProductCard key={i} {...product} />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <ProductCard key={i} />
           ))}
         </div>
 
@@ -222,92 +155,166 @@ export default function LandingPage() {
             View All Products
           </button>
         </motion.div>
-      </section>
+      </section> */}
 
-      {/* SHOP BY CATEGORY */}
-      <section className="py-16 max-w-7xl mx-auto px-6 bg-[#EFFAFD] text-center">
+
+
+
+
+      {/* OUR PRODUCTS */}
+<section className="py-16 max-w-7xl mx-auto px-6 text-center bg-[#EFFAFD]">
+  <motion.h2
+    className="text-3xl sm:text-4xl font-bold mb-10 text-[#002349]"
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+  >
+    Our <span className="text-[#957C3D]">Products</span>
+  </motion.h2>
+
+  <ProductsList />
+</section>
+
+
+
+
+
+
+
+
+
+      {/* 🆕 CATEGORIES SECTION */}
+      <section className="py-16 max-w-7xl mx-auto px-6 text-center bg-[#EFFAFD]">
         <motion.h2
-          className="text-3xl sm:text-4xl font-bold mb-12 text-[#002349]"
+          className="text-3xl sm:text-4xl font-bold mb-10 text-[#002349]"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
         >
           Shop By <span className="text-[#957C3D]">Category</span>
         </motion.h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
           {categories.map((cat, i) => (
             <motion.div
               key={i}
               whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
               onClick={() => navigate(`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`)}
-              className="group bg-white rounded-xl shadow-md overflow-hidden cursor-pointer w-full max-w-[180px] sm:max-w-[200px] md:max-w-[160px]"
+              className="bg-white border rounded-lg shadow-md overflow-hidden cursor-pointer"
             >
-              <div className="relative w-full h-40">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-full h-full object-cover group-hover:opacity-90 transition"
-                />
-                <div className="absolute inset-0 bg-[#002349]/20 opacity-0 group-hover:opacity-100 transition"></div>
-              </div>
-              <div className="py-3 text-center font-semibold text-[#002349] text-sm sm:text-base">
-                {cat.name}
-              </div>
+              <img src={cat.image} alt={cat.name} className="w-full h-48 object-cover" />
+              <div className="p-3 text-center font-semibold text-[#002349]">{cat.name}</div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* SUBSCRIBE SECTION */}
-      <section className="bg-[#EFFAFD] py-16 px-6 text-center">
-        <motion.h3
-          className="text-2xl md:text-3xl font-bold mb-3 text-[#002349]"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-        >
-          Subscribe To Get Discount Offers
-        </motion.h3>
-        <p className="text-gray-600 mb-8">
-          Join our newsletter to receive exclusive discounts and updates.
-        </p>
-        <form className="flex flex-col sm:flex-row justify-center gap-3 max-w-md mx-auto">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="flex-1 px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#002349]"
-          />
-          <button className="bg-gradient-to-r from-[#002349] to-[#957C3D] text-white px-6 py-3 rounded-md font-semibold">
-            Subscribe
-          </button>
-        </form>
-      </section>
-
+      {/* SUBSCRIBE & TESTIMONIALS */}
       <Testimonials />
     </div>
   );
 }
 
-function ProductCard({ name, price, image }) {
+// ---------------- SUB COMPONENTS ----------------
+// function ProductCard() {
+//   return (
+//     <motion.div whileHover={{ scale: 1.03 }} className="bg-white border rounded-lg shadow-md overflow-hidden">
+//       <div className="aspect-[4/5] bg-[#EFFAFD] flex items-center justify-center">
+//         <img src="https://via.placeholder.com/400x500?text=Product" alt="Product" className="w-full h-full object-cover" />
+//       </div>
+//       <div className="p-3 flex justify-between items-center">
+//         <div>
+//           <h5 className="text-sm font-medium text-[#002349]">Men's Shirt</h5>
+//           <p className="text-xs text-gray-500">Best choice</p>
+//         </div>
+//         <div className="text-sm font-semibold text-[#957C3D]">$75</div>
+//       </div>
+//     </motion.div>
+//   );
+// }
+
+
+
+
+
+function ProductsList() {
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch("https://ecommerce-backend-y1bv.onrender.com/api/product")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <p className="text-center text-[#002349] font-semibold">Loading products...</p>;
+  }
+
   return (
-    <motion.div whileHover={{ scale: 1.03 }} className="bg-white border rounded-lg shadow-md overflow-hidden">
-      <div className="aspect-[4/5] bg-[#EFFAFD] flex items-center justify-center">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-        />
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        {products.length > 0 ? (
+          products.map((product) => (
+            <motion.div
+              key={product._id}
+              whileHover={{ scale: 1.03 }}
+              className="bg-white border rounded-lg shadow-md overflow-hidden cursor-pointer"
+            >
+              <div className="aspect-[4/5] bg-[#EFFAFD] flex items-center justify-center">
+                <img
+                  src={
+                    product.images && product.images.length > 0
+                      ? product.images[0]
+                      : "https://via.placeholder.com/400x500?text=No+Image"
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="p-3 flex justify-between items-center">
+                <div className="text-left">
+                  <h5 className="text-sm font-medium text-[#002349] truncate">
+                    {product.name}
+                  </h5>
+                  <p className="text-xs text-gray-500">{product.brand}</p>
+                </div>
+                <div className="text-sm font-semibold text-[#957C3D]">
+                  ₹{product.basePrice}
+                </div>
+              </div>
+            </motion.div>
+          ))
+        ) : (
+          <p className="text-gray-600 col-span-full text-center">No products available.</p>
+        )}
       </div>
-      <div className="p-3 flex justify-between items-center">
-        <div>
-          <h5 className="text-sm font-medium text-[#002349]">{name}</h5>
-          <p className="text-xs text-gray-500">Best choice</p>
-        </div>
-        <div className="text-sm font-semibold text-[#957C3D]">${price}</div>
-      </div>
-    </motion.div>
+
+      <motion.div whileHover={{ scale: 1.05 }} className="flex justify-center mt-10">
+        <button className="bg-gradient-to-r from-[#002349] to-[#957C3D] text-white px-8 py-3 rounded-md font-semibold">
+          View All Products
+        </button>
+      </motion.div>
+    </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
 
 function Testimonials() {
   const testimonials = [
@@ -328,10 +335,17 @@ function Testimonials() {
       <div className="overflow-hidden max-w-5xl mx-auto px-6">
         <motion.div className="flex" animate={{ x: `-${index * 100}%` }} transition={{ duration: 0.8 }}>
           {testimonials.map((t, i) => (
-            <div key={i} className="min-w-full flex flex-col items-center text-center px-6">
-              <img src={t.image} alt={t.name} className="w-20 h-20 rounded-full mb-4 object-cover" />
-              <p className="text-gray-700 mb-3 max-w-2xl italic">"{t.text}"</p>
-              <h4 className="font-semibold text-[#957C3D]">{t.name}</h4>
+            <div key={i} className="min-w-full flex flex-col md:flex-row items-center justify-center gap-8 px-4">
+              <motion.img
+                src={t.image}
+                alt={t.name}
+                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-[#957C3D] shadow-lg"
+                whileHover={{ scale: 1.05 }}
+              />
+              <div className="text-center md:text-left max-w-md">
+                <p className="italic text-gray-700 mb-3">“{t.text}”</p>
+                <h4 className="font-semibold text-[#002349]">{t.name}</h4>
+              </div>
             </div>
           ))}
         </motion.div>
@@ -339,3 +353,13 @@ function Testimonials() {
     </section>
   );
 }
+
+
+
+
+
+
+
+
+
+
