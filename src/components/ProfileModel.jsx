@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from "react";
-import Logout from "../pages/Logout";
 import { Link } from "react-router-dom";
+import { FaUserCircle, FaHeart, FaShoppingCart, FaSignOutAlt } from "react-icons/fa";
 import { fetchWithAuth } from "../refreshtoken/api";
 
 function ProfileModel({ isOpen, onClose, onLogout }) {
@@ -9,8 +8,7 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
   const [profile, setProfile] = useState({ name: "", email: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [bgColor, setBgColor] = useState("bg-gray-400"); // Dynamic background
-  const textColor = "text-white"; // Fixed text color for visibility
+  const [bgColor, setBgColor] = useState("#1E3A8A");
 
   useEffect(() => {
     if (!isOpen) return;
@@ -23,20 +21,16 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
         const data = await fetchWithAuth(
           "https://ecommerce-backend-y1bv.onrender.com/api/user/get-profile"
         );
-        if (data && data.profile) {
+
+        if (data?.profile) {
           setProfileImage(data.profile.profileImage || "");
           setProfile({
             name: data.profile.user.name || "",
             email: data.profile.user.email || "",
           });
 
-          // Set dynamic background for initial if image is missing
           if (!data.profile.profileImage) {
-            const colors = [
-              "bg-red-500", "bg-green-500", "bg-blue-500",
-              "bg-yellow-500", "bg-indigo-500", "bg-purple-500",
-              "bg-pink-500", "bg-teal-500", "bg-orange-500"
-            ];
+            const colors = ["#1E3A8A", "#1E40AF", "#1E3A8A"];
             let hash = 0;
             const name = data.profile.user.name || "";
             for (let i = 0; i < name.length; i++) {
@@ -48,6 +42,12 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
           setError("No profile found");
         }
       } catch (err) {
+        console.error("Profile fetch error:", err.message);
+        if (err.message.includes("Unauthorized") || err.message.includes("Invalid token")) {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          onLogout?.();
+        }
         setError(err.message);
       } finally {
         setLoading(false);
@@ -55,91 +55,89 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
     };
 
     fetchProfile();
-  }, [isOpen]);
+  }, [isOpen, onLogout]);
 
   const getInitial = (name) => (name ? name.charAt(0).toUpperCase() : "?");
 
   if (!isOpen) return null;
 
+  const buttonClass = "flex flex-col items-center justify-center p-3 rounded-xl bg-blue-950 text-white hover:bg-[#957C3D] transition shadow-md";
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center">
+    <div className="fixed inset-0 z-50 flex justify-center items-start pt-16 sm:pt-24 px-2">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm"
+        className="absolute inset-0 bg-black bg-opacity-25 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
       {/* Modal */}
-      <div
-        className={`bg-white rounded-lg p-6 w-80 md:w-96 relative shadow-xl z-50 transform transition-all duration-500 ease-out
-          ${isOpen ? "translate-y-0 opacity-100 animate-bounce-in" : "-translate-y-10 opacity-0"}`}
-      >
+      <div className="relative bg-white rounded-2xl w-full max-w-xs sm:max-w-sm md:max-w-md shadow-2xl p-5 sm:p-6 flex flex-col items-center transition-transform duration-300">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors"
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-lg"
         >
           ✕
         </button>
 
-        {loading && <p className="text-center text-gray-500">Loading...</p>}
+        {loading && <p className="text-gray-500">Loading...</p>}
         {error && <p className="text-red-500 text-center">{error}</p>}
 
         {!loading && !error && (
           <>
-            <div className="flex flex-col items-center mb-6">
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="w-20 h-20 md:w-24 md:h-24 rounded-full mb-2 object-cover border-2 border-blue-500 shadow-md transition-transform transform hover:scale-105 duration-300"
-                />
-              ) : (
-                <div
-                  className={`w-20 h-20 md:w-24 md:h-24 rounded-full mb-2 flex items-center justify-center text-2xl md:text-3xl font-bold shadow-md transition-transform transform hover:scale-105 duration-300 ${bgColor} ${textColor}`}
-                >
-                  {getInitial(profile.name)}
-                </div>
-              )}
-              <h2 className="font-bold text-lg md:text-xl">{profile.name}</h2>
-              <p className="text-sm md:text-base text-gray-500">{profile.email}</p>
-            </div>
-
-            <ul className="flex flex-col gap-2">
-              <Link
-                to="/profile-wrapper"
-                className="py-2 px-3 rounded-md hover:bg-gray-100 transition-colors"
-                onClick={onClose} // Close modal immediately
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-[#1E3A8A] mb-3 shadow-lg"
+              />
+            ) : (
+              <div
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-white text-3xl sm:text-4xl font-bold mb-3 shadow-lg"
+                style={{ backgroundColor: bgColor }}
               >
-                Account settings
+                {getInitial(profile.name)}
+              </div>
+            )}
+
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 text-center">
+              {profile.name}
+            </h2>
+            <p className="text-sm sm:text-base text-gray-500 mb-4 text-center">
+              {profile.email}
+            </p>
+
+            {/* Buttons */}
+            <div className="grid grid-cols-2 gap-3 w-full mt-2">
+              <Link to="/profile-wrapper" onClick={onClose} className={buttonClass}>
+                <FaUserCircle size={24} className="mb-1" />
+                <span className="text-sm font-medium">Account</span>
               </Link>
-              <li
-                className="py-2 px-3 rounded-md hover:bg-gray-100 cursor-pointer transition-colors"
+
+              <Link to="/wishlist" onClick={onClose} className={buttonClass}>
+                <FaHeart size={24} className="mb-1" />
+                <span className="text-sm font-medium">Wishlist</span>
+              </Link>
+
+              <Link to="/cart" onClick={onClose} className={buttonClass}>
+                <FaShoppingCart size={24} className="mb-1" />
+                <span className="text-sm font-medium">Cart</span>
+              </Link>
+
+              <button
                 onClick={() => {
                   onLogout();
                   onClose();
                 }}
+                className={buttonClass}
               >
-                <Logout />
-              </li>
-            </ul>
+                <FaSignOutAlt size={24} className="mb-1" />
+                <span className="text-sm font-medium">Logout</span>
+              </button>
+            </div>
           </>
         )}
       </div>
-
-      {/* Tailwind keyframes */}
-      <style>
-        {`
-          @keyframes bounce-in {
-            0% { transform: translateY(-30px); opacity: 0; }
-            60% { transform: translateY(10px); opacity: 1; }
-            80% { transform: translateY(-5px); }
-            100% { transform: translateY(0); }
-          }
-          .animate-bounce-in {
-            animation: bounce-in 0.5s ease-out forwards;
-          }
-        `}
-      </style>
     </div>
   );
 }

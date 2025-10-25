@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from "react";
-import { fetchWithAuth } from "../refreshtoken/api"; // adjust path if needed
+import { fetchWithAuth } from "../refreshtoken/api";
 import { useNavigate } from "react-router-dom";
 
 function GetProfile() {
@@ -38,7 +37,6 @@ function GetProfile() {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, []);
 
@@ -50,85 +48,108 @@ function GetProfile() {
         Loading...
       </div>
     );
+
   if (error)
     return (
-      <div className="text-red-500 text-center mt-10 text-lg font-medium">{error}</div>
+      <div className="text-red-500 text-center mt-10 text-lg font-medium">
+        {error}
+      </div>
     );
+
   if (!profile)
     return (
-      <div className="text-center mt-10 text-lg font-medium">No profile data found</div>
+      <div className="text-center mt-10 text-lg font-medium">
+        No profile data found
+      </div>
     );
 
   return (
-    <div className="flex justify-center px-4 py-16 bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen">
-      <div className="bg-white shadow-2xl rounded-3xl max-w-5xl w-full p-8 sm:p-12 relative border border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 flex justify-center items-start py-12 px-4">
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
         
-        {/* Edit Button for medium and larger screens */}
-        <button
-          onClick={() => navigate("/edit-profile")}
-          className="hidden md:inline-block absolute top-6 right-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-semibold shadow-lg"
-        >
-          Edit Profile
-        </button>
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 p-6 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            My Profile
+          </h1>
+          <button
+  onClick={() => navigate("/edit-profile")}
+  className="bg-blue-950 text-white px-5 py-2 rounded-lg hover:bg-[#957C3D] transition font-medium shadow-md"
+>
+  Edit Profile
+</button>
 
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-          {/* Profile Image or Initial */}
-          <div className="flex-shrink-0 flex flex-col items-center md:items-start">
+        </div>
+
+        {/* Profile Info Section */}
+        <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Profile Image */}
+          <div className="flex flex-col items-center md:items-start">
             {profile.profileImage ? (
               <img
                 src={profile.profileImage}
                 alt="Profile"
-                className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-indigo-500 shadow-xl"
+                className="w-40 h-40 sm:w-44 sm:h-44 rounded-full object-cover border-4 border-indigo-500 shadow-xl"
               />
             ) : (
               <div
-                className={`w-40 h-40 sm:w-48 sm:h-48 rounded-full flex items-center justify-center text-white text-6xl font-bold shadow-xl ${bgColor}`}
+                className={`w-40 h-40 sm:w-44 sm:h-44 rounded-full flex items-center justify-center text-white text-6xl font-bold shadow-xl ${bgColor}`}
               >
                 {getInitial(profile.user.name)}
               </div>
             )}
 
-            {/* Edit Button for small screens */}
-            <button
-              onClick={() => navigate("/edit-profile")}
-              className="mt-4 md:hidden bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-semibold shadow-md"
-            >
-              Edit Profile
-            </button>
+            <p className="mt-4 text-lg font-semibold text-gray-800">
+              {profile.user.name}
+            </p>
+            <p className="text-gray-500 text-sm">{profile.user.email}</p>
           </div>
 
-          {/* User Info */}
-          <div className="flex-1 text-center md:text-left">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-800">
-              {profile.user.name}
-            </h2>
-            <p className="text-gray-500 mt-2 text-lg">{profile.user.email}</p>
-            <div className="mt-4 space-y-2 text-gray-600">
-              <p><span className="font-semibold">Phone:</span> {profile.phone}</p>
-              <p><span className="font-semibold">Gender:</span> {profile.gender}</p>
-              {/* <p><span className="font-semibold">Date of Birth:</span> {new Date(profile.dateOfBirth).toLocaleDateString()}</p> */}
-              <p className="font-semibold">  <span>Date of Birth:</span>{" "}{profile.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString() : ""}</p>
+          {/* Basic Details */}
+          <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700">
+            <div>
+              <p className="font-semibold">Phone</p>
+              <p>{profile.phone || "Not Provided"}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Gender</p>
+              <p>{profile.gender || "Not Provided"}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Date of Birth</p>
+              <p>
+                {profile.dateOfBirth
+                  ? new Date(profile.dateOfBirth).toLocaleDateString()
+                  : "Not Provided"}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Addresses */}
-        <div className="mt-12">
-          <h3 className="text-2xl font-bold text-gray-700 mb-6 border-b-2 border-gray-200 pb-2">Addresses</h3>
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            {profile.addresses.map((address) => (
-              <div
-                key={address._id}
-                className=""
-              >
-                <p className="text-gray-700 mb-1"><span className="font-semibold">Street:</span> {address.street}</p>
-                <p className="text-gray-700 mb-1"><span className="font-semibold">City:</span> {address.city}</p>
-                <p className="text-gray-700 mb-1"><span className="font-semibold">State:</span> {address.state}</p>
-                <p className="text-gray-700 mb-1"><span className="font-semibold">Postal Code:</span> {address.postalCode}</p>
-                <p className="text-gray-700"><span className="font-semibold">Country:</span> {address.country}</p>
-              </div>
-            ))}
-          </div>
+        {/* Addresses Section */}
+        <div className="px-8 pb-10">
+          <h3 className="text-2xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+            Addresses
+          </h3>
+
+          {profile.addresses.length > 0 ? (
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
+              {profile.addresses.map((address) => (
+                <div
+                  key={address._id}
+                  className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition"
+                >
+                  <p><span className="font-semibold">Street:</span> {address.street}</p>
+                  <p><span className="font-semibold">City:</span> {address.city}</p>
+                  <p><span className="font-semibold">State:</span> {address.state}</p>
+                  <p><span className="font-semibold">Postal Code:</span> {address.postalCode}</p>
+                  <p><span className="font-semibold">Country:</span> {address.country}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No addresses available.</p>
+          )}
         </div>
       </div>
     </div>
