@@ -109,7 +109,7 @@ function CategoryProduct() {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://localhost:5000/api/product/category/${categoryName}`
+          `https://ecommerce-backend-y1bv.onrender.com/api/product/category/${categoryName}`
         );
         if (!response.ok) throw new Error("Failed to fetch category products");
         const data = await response.json();

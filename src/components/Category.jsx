@@ -10,7 +10,7 @@ function Category() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/product/categories/latest");
+        const response = await fetch("https://ecommerce-backend-y1bv.onrender.com/api/product/categories/latest");
         if (!response.ok) throw new Error("Failed to fetch categories");
         const data = await response.json();
         setCategories(data);

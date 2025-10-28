@@ -260,7 +260,7 @@ function CategoryProductUnique() {
       if (!product?.category) return;
       try {
         const response = await fetch(
-          `http://localhost:5000/api/product/category/${product.category}`
+          `https://ecommerce-backend-y1bv.onrender.com/api/product/category/${product.category}`
         );
         if (!response.ok) throw new Error("Failed to fetch related products");
         const data = await response.json();
