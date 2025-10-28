@@ -1,8 +1,15 @@
 // src/components/Navbar.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaShoppingCart, FaBars, FaTimes, FaSearch, FaHeart } from "react-icons/fa";
-import ProfileModel from "./ProfileModel"; // Keep this as a separate component
+import {
+  FaUserCircle,
+  FaShoppingCart,
+  FaBars,
+  FaTimes,
+  FaSearch,
+  FaHeart,
+} from "react-icons/fa";
+import ProfileModel from "./ProfileModel";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,12 +54,18 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-white shadow-lg sticky top-0 z-50 font-sans">
-      <div className="flex justify-between items-center px-6 py-3 border-b">
-        <Link to="/" className="text-3xl font-extrabold text-[#002349] tracking-wide">
+    <nav className="w-full bg-white shadow-md sticky top-0 z-50 font-sans">
+      {/* 🔹 Top Navbar Section */}
+      <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-b">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="text-2xl sm:text-3xl font-extrabold text-[#002349] tracking-wide"
+        >
           Fashion<span className="text-[#957C3D]">Hub</span>
         </Link>
 
+        {/* 🔹 Search Bar (Hidden on small screens) */}
         <div className="hidden md:flex items-center w-1/2 border rounded-full overflow-hidden shadow-sm">
           <input
             type="text"
@@ -64,7 +77,9 @@ const Navbar = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-6">
+        {/* 🔹 Right Icons */}
+        <div className="flex items-center gap-4 sm:gap-6">
+          {/* Wishlist */}
           <Link to="/wishlist" className="relative hover:text-[#957C3D]">
             <FaHeart size={20} />
             <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
@@ -72,6 +87,7 @@ const Navbar = () => {
             </span>
           </Link>
 
+          {/* Cart */}
           <Link to="/cart" className="relative hover:text-[#957C3D]">
             <FaShoppingCart size={20} />
             <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
@@ -79,14 +95,16 @@ const Navbar = () => {
             </span>
           </Link>
 
+          {/* Profile / Auth */}
           {isLoggedIn ? (
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setIsModelOpen(!isModelOpen)}
-                className="flex items-center gap-2 text-gray-700 hover:text-[#957C3D] transition"
+                className="flex items-center gap-1 sm:gap-2 text-gray-700 hover:text-[#957C3D] transition"
               >
                 <FaUserCircle size={22} />
-                <span className="font-medium">{userName}</span> ▼
+                <span className="hidden sm:inline font-medium">{userName}</span>
+                <span className="text-xs sm:text-sm">▼</span>
               </button>
 
               <ProfileModel
@@ -96,35 +114,47 @@ const Navbar = () => {
               />
             </div>
           ) : (
-            <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-3">
               <Link
                 to="/login"
-                className="px-4 py-2 text-sm font-medium text-white bg-[#002349] rounded-full hover:bg-[#957C3D] transition"
+                className="px-4 py-1.5 text-sm font-medium text-white bg-[#002349] rounded-full hover:bg-[#957C3D] transition"
               >
                 Login
               </Link>
               <Link
                 to="/signup"
-                className="px-4 py-2 text-sm font-medium border border-[#002349] text-[#002349] rounded-full hover:bg-[#002349] hover:text-white transition"
+                className="px-4 py-1.5 text-sm font-medium border border-[#002349] text-[#002349] rounded-full hover:bg-[#002349] hover:text-white transition"
               >
                 Register
               </Link>
             </div>
           )}
 
-          <button className="md:hidden text-xl" onClick={() => setMenuOpen(!menuOpen)}>
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden text-2xl focus:outline-none"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
             {menuOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
       </div>
 
+      {/* 🔹 Desktop Categories */}
       <div className="hidden md:flex justify-center gap-8 py-2 bg-gray-50 border-t text-sm font-medium">
         {categories.map((cat, index) => (
-          <div key={index} className="relative group cursor-pointer hover:text-[#957C3D]">
+          <div
+            key={index}
+            className="relative group cursor-pointer hover:text-[#957C3D]"
+          >
             {cat.name}
             <div className="absolute left-0 mt-2 hidden group-hover:flex flex-col bg-white shadow-md rounded-lg w-40 z-50">
               {cat.sub.map((sub, i) => (
-                <Link key={i} to={`/category/${sub.toLowerCase()}`} className="px-4 py-2 hover:bg-gray-100">
+                <Link
+                  key={i}
+                  to={`/category/${sub.toLowerCase()}`}
+                  className="px-4 py-2 hover:bg-gray-100"
+                >
                   {sub}
                 </Link>
               ))}
@@ -133,16 +163,54 @@ const Navbar = () => {
         ))}
       </div>
 
+      {/* 🔹 Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-gray-50 border-t p-4 space-y-3 text-sm">
+        <div className="md:hidden bg-gray-50 border-t p-4 space-y-3 text-sm animate-slide-down">
+          {/* Mobile Search Bar */}
+          <div className="flex items-center border rounded-full overflow-hidden">
+            <input
+              type="text"
+              placeholder="Search for products..."
+              className="flex-1 px-3 py-2 text-sm outline-none"
+            />
+            <button className="bg-[#002349] text-white px-3 py-2">
+              <FaSearch />
+            </button>
+          </div>
+
+          {/* Mobile Auth Buttons */}
+          {!isLoggedIn && (
+            <div className="flex gap-3 mt-2">
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 text-center px-4 py-2 text-sm font-medium text-white bg-[#002349] rounded-full hover:bg-[#957C3D] transition"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 text-center px-4 py-2 text-sm font-medium border border-[#002349] text-[#002349] rounded-full hover:bg-[#002349] hover:text-white transition"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+
+          {/* Categories Accordion */}
           {categories.map((cat, index) => (
             <div key={index} className="border-b pb-2">
               <button
                 className="flex justify-between items-center w-full text-left font-medium"
-                onClick={() => setDropdownOpen(dropdownOpen === cat.name ? "" : cat.name)}
+                onClick={() =>
+                  setDropdownOpen(dropdownOpen === cat.name ? "" : cat.name)
+                }
               >
                 {cat.name}
-                <span className="text-[#957C3D]">{dropdownOpen === cat.name ? "▲" : "▼"}</span>
+                <span className="text-[#957C3D]">
+                  {dropdownOpen === cat.name ? "▲" : "▼"}
+                </span>
               </button>
               {dropdownOpen === cat.name && (
                 <div className="mt-2 pl-4 space-y-1">
