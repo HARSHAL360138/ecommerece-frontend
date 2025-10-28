@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import Register from "./pages/Register";
 import AllProducts from "./pages/AllProducts"; // NEW PAGE
+import ProductDetails from "./pages/ProductDetails"; // ✅ NEWLY ADDED PAGE
 
 // Components
 import Navbar from "./components/Navbar";
@@ -61,6 +62,8 @@ function App() {
             </>
           }
         />
+
+        {/* Hero Section */}
         <Route
           path="/hero-section"
           element={
@@ -77,6 +80,9 @@ function App() {
 
         {/* All Products Page */}
         <Route path="/all-products" element={<AllProducts />} />
+
+        {/* ✅ Product Details Page */}
+        <Route path="/product/:id" element={<ProductDetails />} />
 
         {/* Authentication */}
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
