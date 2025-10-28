@@ -1,44 +1,57 @@
-// src/components/Category.jsx
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const categories = [
-  { name: "Men", image: "https://via.placeholder.com/400x500?text=Men" },
-  { name: "Women", image: "https://via.placeholder.com/400x500?text=Women" },
-  { name: "Kids", image: "https://via.placeholder.com/400x500?text=Kids" },
-  { name: "Accessories", image: "https://via.placeholder.com/400x500?text=Accessories" },
-  { name: "Footwear Sale", image: "https://via.placeholder.com/400x500?text=Footwear+Sale" },
-];
-
-const Category = () => {
+function Category() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  return (
-    <section className="py-16 max-w-7xl mx-auto px-6 text-center bg-[#EFFAFD]">
-      <motion.h2
-        className="text-3xl sm:text-4xl font-bold mb-10 text-[#002349]"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-      >
-        Shop By <span className="text-[#957C3D]">Category</span>
-      </motion.h2>
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/product/categories/latest");
+        if (!response.ok) throw new Error("Failed to fetch categories");
+        const data = await response.json();
+        setCategories(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-        {categories.map((cat, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => navigate(`/category/${cat.name.toLowerCase().replace(/\s+/g, "-")}`)}
-            className="bg-white border rounded-lg shadow-md overflow-hidden cursor-pointer"
+    fetchCategories();
+  }, []);
+
+  if (loading)
+    return <div className="text-center py-10 text-gray-600">Loading categories...</div>;
+  if (error) return <div className="text-center text-red-500">Error: {error}</div>;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6 text-center">Product Categories</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {categories.map((cat, index) => (
+          <div
+            key={index}
+            className="bg-white shadow-lg rounded-2xl overflow-hidden hover:scale-105 transition-transform cursor-pointer"
+            onClick={() => navigate(`/category/${encodeURIComponent(cat.category)}`)}
           >
-            <img src={cat.image} alt={cat.name} className="w-full h-48 object-cover" />
-            <div className="p-3 text-center font-semibold text-[#002349]">{cat.name}</div>
-          </motion.div>
+            <img
+              src={cat.latestProductImage || "https://via.placeholder.com/300x200?text=No+Image"}
+              alt={cat.latestProductName}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4 text-center">
+              <h2 className="text-lg font-semibold text-gray-800">{cat.category}</h2>
+              <p className="text-sm text-gray-500 mt-1">{cat.latestProductName}</p>
+            </div>
+          </div>
         ))}
       </div>
-    </section>
+    </div>
   );
-};
+}
 
 export default Category;
