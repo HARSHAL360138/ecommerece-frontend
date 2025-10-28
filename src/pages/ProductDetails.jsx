@@ -7,19 +7,36 @@ import {
   AiOutlineShareAlt,
   AiFillHeart,
 } from "react-icons/ai";
-import { FaArrowLeft, FaShoppingCart, FaBolt } from "react-icons/fa";
+import { FaShoppingCart, FaBolt } from "react-icons/fa";
 import { FiTruck, FiCheckCircle } from "react-icons/fi";
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
-  const navigate = useNavigate();
 
+  // ✅ Authentication check
   useEffect(() => {
-    fetch(`https://ecommerce-backend-y1bv.onrender.com/api/product/${id}`)
+    const token = localStorage.getItem("accessToken"); // or sessionStorage.getItem(...)
+    if (!token) {
+      navigate("/login"); // redirect if not logged in
+      return;
+    }
+  }, [navigate]);
+
+  // ✅ Fetch product after authentication
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return; // skip fetch if not authenticated
+
+    fetch(`https://ecommerce-backend-y1bv.onrender.com/api/product/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // optional if your backend uses token auth
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
@@ -62,7 +79,7 @@ const ProductDetail = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-            {/* Back Button (Modified) */}
+      {/* BACK BUTTON */}
       <motion.button
         whileHover={{
           scale: 1.05,
@@ -77,9 +94,9 @@ const ProductDetail = () => {
         Back
       </motion.button>
 
-      {/* Product Section */}
+      {/* PRODUCT DETAILS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Product Image */}
+        {/* IMAGE SECTION */}
         <motion.div
           className="relative overflow-hidden rounded-2xl shadow-lg group"
           whileHover={{ scale: 1.02 }}
@@ -105,7 +122,7 @@ const ProductDetail = () => {
           </motion.button>
         </motion.div>
 
-        {/* Product Info */}
+        {/* INFO SECTION */}
         <div className="space-y-4">
           <motion.h1
             className="text-3xl font-bold text-[#002349]"
@@ -131,7 +148,7 @@ const ProductDetail = () => {
             )}
           </div>
 
-          {/* Ratings */}
+          {/* RATINGS */}
           <div className="flex items-center gap-1 text-[#957C3D]">
             {[...Array(5)].map((_, i) => (
               <AiFillStar
@@ -142,10 +159,10 @@ const ProductDetail = () => {
             <span className="text-sm text-gray-500">(234 reviews)</span>
           </div>
 
-          {/* Description */}
+          {/* DESCRIPTION */}
           <p className="text-gray-600 leading-relaxed">{product.description}</p>
 
-          {/* Size Selector */}
+          {/* SIZE SELECTOR */}
           <div>
             <p className="font-semibold text-[#002349] mb-2">Select Size:</p>
             <div className="flex gap-3">
@@ -166,12 +183,12 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Stock */}
+          {/* STOCK */}
           <p className="flex items-center gap-2 text-green-600 font-medium">
             <FiCheckCircle /> {product.availability || "In Stock"}
           </p>
 
-          {/* Warranty & Delivery */}
+          {/* WARRANTY + DELIVERY */}
           <div className="bg-[#EFFAFD] p-4 rounded-xl shadow-inner mt-4">
             <p className="flex items-center gap-2 text-[#002349]">
               <FiTruck className="text-[#957C3D]" /> Free Delivery | Warranty:{" "}
@@ -179,7 +196,7 @@ const ProductDetail = () => {
             </p>
           </div>
 
-          {/* Buttons + Share */}
+          {/* BUTTONS */}
           <div className="flex flex-wrap items-center gap-4 mt-6">
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -196,7 +213,7 @@ const ProductDetail = () => {
               <FaBolt className="inline mr-2" /> Buy Now
             </motion.button>
 
-            {/* Share Button (New Realistic Placement) */}
+            {/* SHARE */}
             <motion.button
               whileHover={{ rotate: 15, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -209,55 +226,6 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-
-      {/* Reviews Section */}
-      <motion.div
-        className="mt-16 bg-[#EFFAFD] rounded-2xl p-8 shadow-lg"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h2 className="text-2xl font-bold text-[#002349] mb-6">
-          Customer Reviews
-        </h2>
-        <div className="space-y-6">
-          {[1, 2, 3].map((r) => (
-            <motion.div
-              key={r}
-              whileHover={{ scale: 1.02 }}
-              className="bg-white p-4 rounded-xl shadow-md text-left"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <img
-                    src={`https://i.pravatar.cc/40?img=${r + 10}`}
-                    alt="user"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div>
-                    <p className="font-semibold text-[#002349]">User {r}</p>
-                    <div className="flex text-[#957C3D]">
-                      {[...Array(5)].map((_, i) => (
-                        <AiFillStar
-                          key={i}
-                          className={`${
-                            i < 4 ? "text-[#957C3D]" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-500">2 days ago</p>
-              </div>
-              <p className="mt-2 text-gray-600">
-                Absolutely loved this product! The fabric quality and fit are
-                amazing.
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
     </motion.div>
   );
 };
