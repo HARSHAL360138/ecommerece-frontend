@@ -144,6 +144,8 @@ import EditProfile from "./profile/EditProfile";
 import ProfileWrapper from "./profile/ProfileWrapper";
 import CategoryProduct from "./components/CategoryProduct";
 import CategoryProductUnique from "./components/CategoryProductUnique";
+import Wishlist from "./components/Wishlist";
+import Cart from "./components/Cart";
 
 // Protected/Public Routes
 const ProtectedRoute = ({ children }) => {
@@ -213,6 +215,8 @@ function App() {
         <Route path="/categories" element={<ProtectedRoute><CategoryProduct /></ProtectedRoute>} />
         <Route path="/category/:categoryName" element={<ProtectedRoute><CategoryProduct /></ProtectedRoute>} />
         <Route path="/product/:id" element={<ProtectedRoute><CategoryProductUnique /></ProtectedRoute>} />
+        <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
       </Routes>
       {!hideNavFooter && <Footer />}
     </>
