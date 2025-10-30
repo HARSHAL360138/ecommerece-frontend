@@ -146,6 +146,7 @@ import CategoryProduct from "./components/CategoryProduct";
 import CategoryProductUnique from "./components/CategoryProductUnique";
 import Wishlist from "./components/Wishlist";
 import Cart from "./components/Cart";
+import AiChatModel from "./components/AiChatModel";
 
 // Protected/Public Routes
 const ProtectedRoute = ({ children }) => {
@@ -178,6 +179,7 @@ function App() {
               <Category />
               <SubscriptionOffer />
               <Testimonials />
+              <AiChatModel/>
             </>
           }
         />
@@ -191,6 +193,7 @@ function App() {
               <Category />
               <SubscriptionOffer />
               <Testimonials />
+              <AiChatModel/>
             </>
           }
         />
@@ -219,6 +222,7 @@ function App() {
         <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
       </Routes>
       {!hideNavFooter && <Footer />}
+      <AiChatModel/>
     </>
   );
 }
