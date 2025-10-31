@@ -1,6 +1,11 @@
+// src/pages/CategoryProductUnique.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { fetchWithAuth } from "../refreshtoken/api";
 import { motion } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import {
   Share2,
   Truck,
@@ -17,8 +22,6 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
-const BASE_URL = "https://ecommerce-backend-y1bv.onrender.com";
-
 function CategoryProductUnique() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -30,33 +33,29 @@ function CategoryProductUnique() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("accessToken");
-
-  // 🧩 Fetch single product by ID
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/product/${id}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+        const res = await fetch(
+          `https://ecommerce-backend-y1bv.onrender.com/api/product/${id}`
+        );
         const data = await res.json();
-        setProduct(data.product || data); // handle both shapes
-      } catch (err) {
-        console.error("Error fetching product:", err);
-      } finally {
+        setProduct(data);
         setLoading(false);
+      } catch (err) {
+        console.error(err);
       }
     };
     if (id) fetchProduct();
-  }, [id, token]);
+  }, [id]);
 
-  // 🧩 Fetch related products from same category
+  // Related products
   useEffect(() => {
     const fetchRelated = async () => {
       if (!product?.category) return;
       try {
         const res = await fetch(
-          `${BASE_URL}/api/product/category/${product.category}`
+          `https://ecommerce-backend-y1bv.onrender.com/api/product/category/${product.category}`
         );
         const data = await res.json();
         const filtered = (data.products || []).filter(
@@ -64,7 +63,7 @@ function CategoryProductUnique() {
         );
         setRelatedProducts(filtered.slice(0, 4));
       } catch (err) {
-        console.error("Error fetching related products:", err);
+        console.error(err);
       }
     };
     if (product) fetchRelated();
@@ -81,7 +80,7 @@ function CategoryProductUnique() {
         text: "Check out this product!",
         url: window.location.href,
       });
-    } else alert("Sharing not supported on this device.");
+    } else alert("Sharing not supported");
   };
 
   if (loading)
@@ -91,14 +90,7 @@ function CategoryProductUnique() {
       </div>
     );
 
-  if (!product)
-    return (
-      <div className="text-center py-10 text-red-500">
-        Product not found.
-      </div>
-    );
-
-  // Dummy reviews for demo
+  // dummy reviews
   const reviews = [
     {
       name: "Amit Verma",
@@ -120,9 +112,42 @@ function CategoryProductUnique() {
     },
   ];
 
+  // Add this function above the return()
+const handleAddToCart = async () => {
+  if (!product?._id) return toast.error("Product not found");
+
+  try {
+    // fetchWithAuth already returns parsed JSON
+    const data = await fetchWithAuth(
+      "https://ecommerce-backend-y1bv.onrender.com/api/cart/add",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: product._id,
+          quantity: 1,
+        }),
+      }
+    );
+
+    if (data.success) {
+      toast.success("✅ Product added to cart successfully!");
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    } else {
+      toast.error(data.message || "⚠ Failed to add product to cart");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("❌ Something went wrong while adding to cart");
+  }
+};
+
+
+
   return (
     <div className="container mx-auto px-4 py-10 text-[#002349]">
-      {/* 🔙 Back Button */}
+      {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-6 px-4 py-2 bg-[#002349] text-white rounded-lg hover:bg-[#00172f] transition"
@@ -130,7 +155,7 @@ function CategoryProductUnique() {
         <ArrowLeft size={18} /> Back
       </button>
 
-      {/* 🖼 Product Section */}
+      {/* Product Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* Image */}
         <motion.div
@@ -201,7 +226,7 @@ function CategoryProductUnique() {
             </p>
           </div>
 
-          {/* Size Selector */}
+          {/* Size Select */}
           <div className="mt-4 flex items-center gap-4 flex-wrap">
             {["S", "M", "L", "XL", "XXL"].map((size) => (
               <motion.button
@@ -225,7 +250,7 @@ function CategoryProductUnique() {
             </button>
           </div>
 
-          {/* Delivery Info */}
+          {/* Delivery & Pincode */}
           <div className="mt-6">
             <div className="flex justify-between flex-wrap gap-3 text-sm font-medium text-[#002349]">
               <div className="flex items-center gap-2">
@@ -252,87 +277,172 @@ function CategoryProductUnique() {
             </div>
           </div>
 
-          {/* 🛒 Buttons */}
-          <div className="mt-6 flex flex-wrap gap-4">
-            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-[#002349] text-white rounded-xl font-semibold shadow-md hover:bg-[#001b36]">
+          {/* Offers */}
+          <div className="mt-6 border rounded-xl p-4 bg-[#fff9ef]">
+            <h3 className="font-semibold flex items-center gap-2 text-[#957C3D] mb-2">
+              <Tag size={18} /> Available Offers
+            </h3>
+            <ul className="text-sm text-gray-700 list-disc pl-6 space-y-1">
+              <li>Get 10% off with code <strong>NEW10</strong></li>
+              <li>Flat ₹100 off on prepaid orders above ₹999</li>
+              <li>5% cashback with XYZ Bank Credit Card</li>
+            </ul>
+            <div className="mt-3 flex gap-2">
+              <input
+                placeholder="Enter Coupon Code"
+                className="border rounded-lg px-3 py-2 text-sm w-40 focus:border-[#957C3D] outline-none"
+              />
+              <button className="px-4 py-2 bg-[#002349] text-white rounded-lg text-sm hover:bg-[#001b36]">
+                Apply
+              </button>
+            </div>
+          </div>
+
+          {/* 🛒 Add to Cart / Buy Now / Share Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mt-6 flex flex-wrap gap-4"
+          >
+            {/* <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#002349] text-white rounded-xl font-semibold shadow-md hover:bg-[#001b36] transition-all"
+            >
               <ShoppingCart size={20} /> Add to Cart
-            </button>
-            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-[#957C3D] text-white rounded-xl font-semibold shadow-md hover:bg-[#7b6633]">
+            </motion.button> */}
+
+
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={handleAddToCart} // 👈 Added this line
+  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#002349] text-white rounded-xl font-semibold shadow-md hover:bg-[#001b36] transition-all"
+>
+  <ShoppingCart size={20} /> Add to Cart
+</motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#957C3D] text-white rounded-xl font-semibold shadow-md hover:bg-[#7b6633] transition-all"
+            >
               <ShoppingBag size={20} /> Buy Now
-            </button>
-            <button
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleShare}
-              className="flex items-center justify-center gap-2 px-6 py-3 border border-[#957C3D] text-[#002349] rounded-xl font-semibold hover:bg-[#fff5e1]"
+              className="flex items-center justify-center gap-2 px-6 py-3 border border-[#957C3D] text-[#002349] rounded-xl font-semibold hover:bg-[#fff5e1] transition-all"
             >
               <Share2 size={20} /> Share
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </motion.div>
       </div>
 
-      {/* ⭐ Ratings & Reviews */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="mt-16"
-      >
-        <h2 className="text-2xl font-bold text-center text-[#002349] mb-8">
-          Ratings & Reviews
-        </h2>
+      {/* ⭐ Rating & Reviews Section */}
+{/* ⭐ Rating & Reviews Section */}
+<motion.div
+  initial={{ opacity: 0, y: 40 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8 }}
+  className="mt-16"
+>
+  <h2 className="text-2xl font-bold text-center text-[#002349] mb-8">
+    Ratings & Reviews
+  </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Summary */}
-          <div className="bg-[#fdfcf9] border border-[#957C3D]/30 p-6 rounded-2xl shadow-md text-center">
-            <p className="text-6xl font-extrabold text-[#957C3D]">
-              {product.rating || 4.3}
-            </p>
-            <div className="flex justify-center gap-1 mt-2 mb-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  size={22}
-                  fill={i < Math.round(product.rating || 4.3) ? "#FFD700" : "none"}
-                  stroke="#957C3D"
-                />
-              ))}
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    {/* 🔹 Left Side – Rating Summary */}
+    <motion.div
+      initial={{ opacity: 0, x: -40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6 }}
+      className="bg-[#fdfcf9] border border-[#957C3D]/30 p-6 rounded-2xl shadow-md flex flex-col justify-center items-center text-center"
+    >
+      <p className="text-6xl font-extrabold text-[#957C3D]">
+        {product.rating || 4.3}
+      </p>
+      <div className="flex justify-center gap-1 mt-2 mb-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            size={22}
+            fill={i < Math.round(product.rating || 4.3) ? "#FFD700" : "none"}
+            stroke="#957C3D"
+          />
+        ))}
+      </div>
+      <p className="text-sm text-gray-600 mb-6">
+        Based on {reviews.length} verified reviews
+      </p>
+
+      {/* Dynamic Progress Bars */}
+      <div className="w-full space-y-2">
+        {[5, 4, 3, 2, 1].map((star) => {
+          const count = reviews.filter((r) => r.rating === star).length;
+          const percent = Math.round((count / reviews.length) * 100);
+          return (
+            <div key={star} className="flex items-center gap-3">
+              <span className="w-6 text-sm font-medium">{star}★</span>
+              <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${percent}%` }}
+                  transition={{ duration: 0.8 }}
+                  className="h-2 bg-[#957C3D] rounded-full"
+                ></motion.div>
+              </div>
+              <span className="text-sm text-gray-600 w-10 text-right">
+                {percent}%
+              </span>
             </div>
-            <p className="text-sm text-gray-600 mb-6">
-              Based on {reviews.length} verified reviews
-            </p>
+          );
+        })}
+      </div>
+    </motion.div>
+
+    {/* 🔹 Right Side – Individual Reviews */}
+    <motion.div
+      initial={{ opacity: 0, x: 40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-4 max-h-[400px] overflow-y-auto pr-2"
+    >
+      {reviews.map((r, index) => (
+        <motion.div
+          key={index}
+          whileHover={{ scale: 1.02 }}
+          className="bg-white border border-[#957C3D]/30 p-4 rounded-xl shadow-sm transition-all hover:shadow-lg"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <User className="text-[#957C3D]" size={18} />
+              <p className="font-semibold text-sm">{r.name}</p>
+            </div>
+            <p className="text-xs text-gray-400">{r.date}</p>
           </div>
 
-          {/* Reviews */}
-          <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-            {reviews.map((r, i) => (
-              <div
+          <div className="flex items-center gap-1 mb-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
                 key={i}
-                className="bg-white border border-[#957C3D]/30 p-4 rounded-xl shadow-sm hover:shadow-lg transition-all"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <User className="text-[#957C3D]" size={18} />
-                    <p className="font-semibold text-sm">{r.name}</p>
-                  </div>
-                  <p className="text-xs text-gray-400">{r.date}</p>
-                </div>
-                <div className="flex items-center gap-1 mb-1">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <Star
-                      key={j}
-                      size={16}
-                      fill={j < r.rating ? "#FFD700" : "none"}
-                      stroke="#957C3D"
-                    />
-                  ))}
-                </div>
-                <p className="text-gray-700 text-sm">{r.comment}</p>
-              </div>
+                size={16}
+                fill={i < r.rating ? "#FFD700" : "none"}
+                stroke="#957C3D"
+              />
             ))}
           </div>
-        </div>
-      </motion.div>
 
+          <p className="text-gray-700 text-sm">{r.comment}</p>
+        </motion.div>
+      ))}
+    </motion.div>
+  </div>
+</motion.div>
 
 
 
@@ -402,7 +512,7 @@ function CategoryProductUnique() {
           </div>
         )}
       </motion.div>
-      
+
       {/* 🧾 Size Chart Modal */}
       {showSizeChart && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
