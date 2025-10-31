@@ -379,6 +379,8 @@ import { fetchWithAuth } from "../refreshtoken/api";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Trash2, ShoppingBag, X } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Cart() {
   const [cart, setCart] = useState([]);
@@ -391,7 +393,7 @@ function Cart() {
   const UPDATE_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/update";
   const CLEAR_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/clear";
 
-  // ✅ Fetch cart
+  // ✅ Fetch Cart
   const fetchCart = async () => {
     try {
       const data = await fetchWithAuth(API_BASE, { method: "GET" });
@@ -406,51 +408,74 @@ function Cart() {
         setCart([]);
       }
     } catch (err) {
+      console.error("Cart Fetch Error:", err);
+      toast.error("⚠️ Failed to fetch cart items");
       setError(err.message || "Failed to fetch cart");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Remove product
+  // ✅ Remove Product
   const removeFromCart = async (productId) => {
-    if (!window.confirm("Remove this item from your cart?")) return;
     try {
-      await fetchWithAuth(REMOVE_API, {
+      const res = await fetchWithAuth(REMOVE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
-      fetchCart();
-    } catch {
-      alert("Error removing product");
+
+      if (res?.success) {
+        toast.success("🗑️ Product removed from cart successfully!");
+        fetchCart();
+      } else {
+        toast.error(res?.message || "❌ Failed to remove item");
+      }
+    } catch (err) {
+      console.error("Remove Error:", err);
+      toast.error("⚠️ Something went wrong while removing item");
     }
   };
 
-  // ✅ Update quantity
+  // ✅ Update Quantity
   const updateQuantity = async (productId, quantity) => {
-    if (quantity < 1) return;
+    if (quantity < 1) {
+      toast.info("⚠️ Quantity cannot be less than 1");
+      return;
+    }
     try {
-      await fetchWithAuth(UPDATE_API, {
+      const res = await fetchWithAuth(UPDATE_API, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, quantity }),
       });
-      fetchCart();
-    } catch {
-      alert("Error updating quantity");
+
+      if (res?.success) {
+        toast.success("🔄 Cart updated successfully!");
+        fetchCart();
+      } else {
+        toast.error(res?.message || "❌ Failed to update quantity");
+      }
+    } catch (err) {
+      console.error("Update Error:", err);
+      toast.error("⚠️ Error updating quantity");
     }
   };
 
-  // ✅ Clear cart
+  // ✅ Clear Cart
   const clearCart = async () => {
-    if (!window.confirm("Clear all items from cart?")) return;
     try {
-      await fetchWithAuth(CLEAR_API, { method: "DELETE" });
-      setCart([]);
-      setTotal(0);
-    } catch {
-      alert("Error clearing cart");
+      const res = await fetchWithAuth(CLEAR_API, { method: "DELETE" });
+      if (res?.success) {
+        setCart([]);
+        setTotal(0);
+        toast.success("🧹 Cart cleared successfully!");
+      } else {
+        toast.error(res?.message || "❌ Failed to clear cart");
+      }
+    } catch (err) {
+      console.error("Clear Error:", err);
+      toast.error("⚠️ Something went wrong while clearing the cart");
     }
   };
 
@@ -470,6 +495,17 @@ function Cart() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-20">
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
         <motion.h1
@@ -554,7 +590,7 @@ function Cart() {
                     ₹{item.product?.basePrice}
                   </p>
 
-                  {/* Quantity */}
+                  {/* Quantity Controls */}
                   <div className="flex items-center justify-start mt-3 space-x-3">
                     <button
                       onClick={() =>

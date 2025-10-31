@@ -1187,10 +1187,12 @@
 // export default Wishlist;
 
 import React, { useEffect, useState } from "react";
-import { fetchWithAuth } from "../refreshtoken/api";
+import { fetchWithAuth } from "../refreshtoken/api"; // ✅ Auto token refresh
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, X, Trash2, Eye } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
@@ -1201,13 +1203,28 @@ function Wishlist() {
   const API_BASE = "https://ecommerce-backend-y1bv.onrender.com/api/wishlist";
   const CART_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/add";
 
-  // ✅ Fetch Wishlist
+  // ✅ Fetch Wishlist with Safe Token Handling
   const fetchWishlist = async () => {
     try {
       const data = await fetchWithAuth(API_BASE, { method: "GET" });
+
+      // If unauthorized even after refresh
+      if (data?.message?.includes("Unauthorized")) {
+        handleSessionExpired();
+        return;
+      }
+
       setWishlist(data.wishlist || []);
     } catch (err) {
-      setError(err.message || "Failed to load wishlist");
+      console.error("Fetch wishlist error:", err);
+      if (
+        err.message.includes("Unauthorized") ||
+        err.message.includes("Invalid token")
+      ) {
+        handleSessionExpired();
+      } else {
+        setError(err.message || "Failed to load wishlist");
+      }
     } finally {
       setLoading(false);
     }
@@ -1216,13 +1233,22 @@ function Wishlist() {
   // ❌ Remove Single Item
   const removeFromWishlist = async (productId) => {
     try {
-      await fetchWithAuth(`${API_BASE}/remove`, {
+      const res = await fetchWithAuth(`${API_BASE}/remove`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
+
+      if (res?.message?.includes("Unauthorized")) {
+        handleSessionExpired();
+        return;
+      }
+
       setWishlist((prev) => prev.filter((item) => item._id !== productId));
-    } catch {
-      alert("Error removing item.");
+      toast.success("🗑️ Item removed from wishlist");
+    } catch (error) {
+      toast.error("❌ Error removing item from wishlist");
+      console.error("Remove wishlist error:", error);
     }
   };
 
@@ -1230,42 +1256,91 @@ function Wishlist() {
   const clearWishlist = async () => {
     if (!window.confirm("Are you sure you want to clear your wishlist?")) return;
     try {
-      await fetchWithAuth(`${API_BASE}/clear`, { method: "DELETE" });
+      const res = await fetchWithAuth(`${API_BASE}/clear`, { method: "DELETE" });
+
+      if (res?.message?.includes("Unauthorized")) {
+        handleSessionExpired();
+        return;
+      }
+
       setWishlist([]);
-    } catch {
-      alert("Error clearing wishlist");
+      toast.info("🧹 Wishlist cleared");
+    } catch (error) {
+      toast.error("❌ Error clearing wishlist");
+      console.error("Clear wishlist error:", error);
     }
   };
 
-  // 🛒 Add to Cart
+  // 🛒 Add to Cart with Popup & Redirect
   const addToCart = async (productId) => {
     try {
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(CART_API, {
+      const data = await fetchWithAuth(CART_API, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, quantity: 1 }),
       });
 
-      const res = await response.json();
-      if (response.ok) {
-        alert("Added to cart!");
-        navigate("/cart");
-      } else {
-        alert(res.message || "Failed to add to cart");
+      if (data?.message?.includes("Unauthorized")) {
+        handleSessionExpired();
+        return;
       }
-    } catch {
-      alert("Error adding to cart");
+
+      if (data.success) {
+        const toastId = toast.success(
+          <div className="text-center">
+            <p className="font-semibold mb-2">✅ Product added to cart!</p>
+            <button
+              onClick={() => {
+                toast.dismiss(toastId);
+                navigate("/cart");
+              }}
+              className="bg-[#002349] text-white px-4 py-2 rounded-lg hover:bg-[#003366] transition-all"
+            >
+              Go to Cart
+            </button>
+            <p className="text-xs text-gray-300 mt-1">(Redirecting in 5s...)</p>
+          </div>,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: false,
+            theme: "colored",
+          }
+        );
+
+        setTimeout(() => navigate("/cart"), 5000);
+      } else {
+        toast.error(data.message || "⚠️ Failed to add to cart");
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      if (
+        error.message.includes("Unauthorized") ||
+        error.message.includes("Invalid token")
+      ) {
+        handleSessionExpired();
+      } else {
+        toast.error("❌ Something went wrong while adding to cart");
+      }
     }
   };
 
+  // ✅ Handle Token Expiry & Logout
+  const handleSessionExpired = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    toast.error("🔒 Session expired. Please log in again.");
+    setTimeout(() => navigate("/login"), 2000);
+  };
+
+  // ✅ Load wishlist on page open
   useEffect(() => {
     fetchWishlist();
   }, []);
 
+  // 🌀 Loading State
   if (loading)
     return (
       <div className="text-center mt-20 text-gray-600 animate-pulse text-lg">
@@ -1273,11 +1348,16 @@ function Wishlist() {
       </div>
     );
 
+  // ⚠️ Error State
   if (error)
     return <div className="text-center text-red-500 mt-10">{error}</div>;
 
+  // 💖 Wishlist UI
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-20">
+      {/* ✅ Toast Notifications */}
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
         <motion.h1
@@ -1387,7 +1467,7 @@ function Wishlist() {
                         <Eye size={18} /> View Details
                       </Link>
 
-                      {/* Remove Button (Below Style) */}
+                      {/* Remove Button */}
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
