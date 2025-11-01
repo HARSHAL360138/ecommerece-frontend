@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Plus, Trash2, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AddressPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // ✅ Get product ID from URL
+
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState({
     name: "",
@@ -19,6 +21,7 @@ const AddressPage = () => {
   });
   const [selectedAddress, setSelectedAddress] = useState(null);
 
+  // ✅ Load addresses and selected address
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("userAddresses")) || [];
     setAddresses(stored);
@@ -26,23 +29,27 @@ const AddressPage = () => {
     if (savedSelected) setSelectedAddress(savedSelected);
   }, []);
 
+  // ✅ Save updated address list
   const saveAddresses = (updated) => {
     localStorage.setItem("userAddresses", JSON.stringify(updated));
     setAddresses(updated);
   };
 
+  // ✅ Select an address
   const handleSelect = (addr) => {
     setSelectedAddress(addr);
     localStorage.setItem("selectedAddress", JSON.stringify(addr));
     toast.success("✅ Address selected successfully!");
   };
 
+  // ✅ Delete an address
   const handleDelete = (pincode) => {
     const updated = addresses.filter((a) => a.pincode !== pincode);
     saveAddresses(updated);
     toast.info("🗑 Address deleted");
   };
 
+  // ✅ Add new address
   const handleAddAddress = () => {
     if (
       !newAddress.name ||
@@ -70,28 +77,30 @@ const AddressPage = () => {
     toast.success("🎉 Address added successfully!");
   };
 
+  // ✅ Continue to BuyNow page
   const handleConfirm = () => {
     if (!selectedAddress) {
       toast.warn("⚠ Please select an address before proceeding!");
       return;
     }
     localStorage.setItem("selectedAddress", JSON.stringify(selectedAddress));
-    navigate(-1);
+    navigate(`/buynow/${id}`); // ✅ Redirect to BuyNow page
   };
 
+  // ✅ Open Google Maps
   const handleGoogleSearch = () => {
     window.open("https://www.google.com/maps", "_blank");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f6f8fb] to-[#e8ecf3] p-4 sm:p-8">
-      <ToastContainer />
+      <ToastContainer position="top-center" />
       <div className="max-w-5xl mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden border border-[#002349]/20">
         {/* Header */}
-        <div className="flex justify-between items-center  text-white p-5 sm:p-6">
+        <div className="flex justify-between items-center text-white p-5 sm:p-6 bg-[#002349]/5">
           <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-black hover:text-[#957C3D] transition"
+            onClick={() => navigate(`/buynow/${id}`)}
+            className="flex items-center gap-2 text-[#002349] hover:text-[#957C3D] transition"
           >
             <ArrowLeft size={20} /> Back
           </button>
@@ -100,6 +109,7 @@ const AddressPage = () => {
           </h2>
         </div>
 
+        {/* Main Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
           {/* Left: Address List */}
           <div className="space-y-4">
@@ -126,8 +136,7 @@ const AddressPage = () => {
                       </h4>
                       <p className="text-gray-700 text-sm">{addr.phone}</p>
                       <p className="text-gray-700 text-sm mt-1">
-                        {addr.address}, {addr.city}, {addr.state} -{" "}
-                        {addr.pincode}
+                        {addr.address}, {addr.city}, {addr.state} - {addr.pincode}
                       </p>
                       {addr.location && (
                         <a
@@ -242,7 +251,7 @@ const AddressPage = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t  flex justify-end">
+        <div className="p-6 border-t flex justify-end">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
