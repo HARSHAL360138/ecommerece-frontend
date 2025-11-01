@@ -1,11 +1,9 @@
-// src/pages/CategoryProductUnique.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchWithAuth } from "../refreshtoken/api";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import {
   Share2,
   Truck,
@@ -25,6 +23,7 @@ import {
 function CategoryProductUnique() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [product, setProduct] = useState(null);
   const [wishlist, setWishlist] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
@@ -32,24 +31,29 @@ function CategoryProductUnique() {
   const [pincode, setPincode] = useState("");
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [addedToCart, setAddedToCart] = useState(false); // ✅ FIXED missing state
 
+  // ✅ Fetch single product
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await fetch(
           `https://ecommerce-backend-y1bv.onrender.com/api/product/${id}`
         );
+        if (!res.ok) throw new Error("Failed to fetch product");
         const data = await res.json();
         setProduct(data);
-        setLoading(false);
       } catch (err) {
         console.error(err);
+        toast.error("Failed to load product details.");
+      } finally {
+        setLoading(false);
       }
     };
     if (id) fetchProduct();
   }, [id]);
 
-  // Related products
+  // ✅ Fetch related products
   useEffect(() => {
     const fetchRelated = async () => {
       if (!product?.category) return;
@@ -69,18 +73,52 @@ function CategoryProductUnique() {
     if (product) fetchRelated();
   }, [product]);
 
+  // ✅ Calculate discount
   const discountPercent = product?.mrp
     ? Math.round(((product.mrp - product.basePrice) / product.mrp) * 100)
     : 0;
 
+  // ✅ Share functionality
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: product.name,
+        title: product?.name,
         text: "Check out this product!",
         url: window.location.href,
       });
-    } else alert("Sharing not supported");
+    } else {
+      toast.info("Sharing not supported on this browser");
+    }
+  };
+
+  // ✅ Add to Cart function
+  const handleAddToCart = async () => {
+    if (!product?._id) return toast.error("Product not found");
+
+    try {
+      const data = await fetchWithAuth(
+        "https://ecommerce-backend-y1bv.onrender.com/api/cart/add",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productId: product._id,
+            quantity: 1,
+          }),
+        }
+      );
+
+      if (data.success) {
+        toast.success("✅ Product added to cart successfully!");
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+      } else {
+        toast.error(data.message || "⚠ Failed to add product to cart");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Something went wrong while adding to cart");
+    }
   };
 
   if (loading)
@@ -90,7 +128,7 @@ function CategoryProductUnique() {
       </div>
     );
 
-  // dummy reviews
+  // Dummy reviews
   const reviews = [
     {
       name: "Amit Verma",
@@ -112,42 +150,11 @@ function CategoryProductUnique() {
     },
   ];
 
-  // Add this function above the return()
-const handleAddToCart = async () => {
-  if (!product?._id) return toast.error("Product not found");
-
-  try {
-    // fetchWithAuth already returns parsed JSON
-    const data = await fetchWithAuth(
-      "https://ecommerce-backend-y1bv.onrender.com/api/cart/add",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: product._id,
-          quantity: 1,
-        }),
-      }
-    );
-
-    if (data.success) {
-      toast.success("✅ Product added to cart successfully!");
-      setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 2000);
-    } else {
-      toast.error(data.message || "⚠ Failed to add product to cart");
-    }
-  } catch (err) {
-    console.error(err);
-    toast.error("❌ Something went wrong while adding to cart");
-  }
-};
-
-
-
   return (
     <div className="container mx-auto px-4 py-10 text-[#002349]">
-      {/* Back Button */}
+      <ToastContainer />
+
+      {/* 🔙 Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 mb-6 px-4 py-2 bg-[#002349] text-white rounded-lg hover:bg-[#00172f] transition"
@@ -155,9 +162,9 @@ const handleAddToCart = async () => {
         <ArrowLeft size={18} /> Back
       </button>
 
-      {/* Product Section */}
+      {/* 🖼 Product Details Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        {/* Image */}
+        {/* Left - Image */}
         <motion.div
           initial={{ opacity: 0, x: -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -191,7 +198,7 @@ const handleAddToCart = async () => {
           </button>
         </motion.div>
 
-        {/* Product Details */}
+        {/* Right - Product Details */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -201,7 +208,7 @@ const handleAddToCart = async () => {
           <h1 className="text-3xl font-extrabold">{product.name}</h1>
           <p className="text-gray-600">{product.description}</p>
 
-          {/* Rating */}
+          {/* ⭐ Rating */}
           <div className="flex items-center gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
@@ -216,17 +223,19 @@ const handleAddToCart = async () => {
             </span>
           </div>
 
-          {/* Price */}
+          {/* 💰 Price */}
           <div>
             <p className="text-2xl font-bold text-[#957C3D]">
               ₹{product.basePrice?.toLocaleString()}
             </p>
-            <p className="text-gray-500 line-through">
-              MRP: ₹{product.mrp?.toLocaleString()}
-            </p>
+            {product.mrp && (
+              <p className="text-gray-500 line-through">
+                MRP: ₹{product.mrp?.toLocaleString()}
+              </p>
+            )}
           </div>
 
-          {/* Size Select */}
+          {/* 📏 Size Selection */}
           <div className="mt-4 flex items-center gap-4 flex-wrap">
             {["S", "M", "L", "XL", "XXL"].map((size) => (
               <motion.button
@@ -250,7 +259,7 @@ const handleAddToCart = async () => {
             </button>
           </div>
 
-          {/* Delivery & Pincode */}
+          {/* 🚚 Delivery Options */}
           <div className="mt-6">
             <div className="flex justify-between flex-wrap gap-3 text-sm font-medium text-[#002349]">
               <div className="flex items-center gap-2">
@@ -263,6 +272,8 @@ const handleAddToCart = async () => {
                 <CreditCard size={18} className="text-[#957C3D]" /> EMI Available
               </div>
             </div>
+
+            {/* Pincode Input */}
             <div className="flex gap-2 items-center mt-3">
               <input
                 type="text"
@@ -277,7 +288,7 @@ const handleAddToCart = async () => {
             </div>
           </div>
 
-          {/* Offers */}
+          {/* 🎁 Offers */}
           <div className="mt-6 border rounded-xl p-4 bg-[#fff9ef]">
             <h3 className="font-semibold flex items-center gap-2 text-[#957C3D] mb-2">
               <Tag size={18} /> Available Offers
@@ -287,49 +298,42 @@ const handleAddToCart = async () => {
               <li>Flat ₹100 off on prepaid orders above ₹999</li>
               <li>5% cashback with XYZ Bank Credit Card</li>
             </ul>
-            <div className="mt-3 flex gap-2">
-              <input
-                placeholder="Enter Coupon Code"
-                className="border rounded-lg px-3 py-2 text-sm w-40 focus:border-[#957C3D] outline-none"
-              />
-              <button className="px-4 py-2 bg-[#002349] text-white rounded-lg text-sm hover:bg-[#001b36]">
-                Apply
-              </button>
-            </div>
           </div>
 
-          {/* 🛒 Add to Cart / Buy Now / Share Buttons */}
+          {/* 🛒 Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="mt-6 flex flex-wrap gap-4"
           >
-            {/* <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#002349] text-white rounded-xl font-semibold shadow-md hover:bg-[#001b36] transition-all"
-            >
-              <ShoppingCart size={20} /> Add to Cart
-            </motion.button> */}
-
-
-<motion.button
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  onClick={handleAddToCart} // 👈 Added this line
-  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#002349] text-white rounded-xl font-semibold shadow-md hover:bg-[#001b36] transition-all"
->
-  <ShoppingCart size={20} /> Add to Cart
-</motion.button>
-
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#957C3D] text-white rounded-xl font-semibold shadow-md hover:bg-[#7b6633] transition-all"
+              onClick={handleAddToCart}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-[#002349] text-white rounded-xl font-semibold shadow-md hover:bg-[#001b36] transition-all"
             >
-              <ShoppingBag size={20} /> Buy Now
+              <ShoppingCart size={20} />{" "}
+              {addedToCart ? "Added ✓" : "Add to Cart"}
             </motion.button>
+
+          <motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={() => {
+    if (!selectedSize) {
+      toast.warn("⚠ Please select a size before proceeding!");
+      return;
+    }
+    navigate(`/buynow/${product._id}`);
+  }}
+  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#957C3D] text-white rounded-xl font-semibold shadow-md hover:bg-[#7b6633] transition-all"
+>
+  <ShoppingBag size={20} /> Buy Now
+</motion.button>
+
+
+
 
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -343,7 +347,6 @@ const handleAddToCart = async () => {
         </motion.div>
       </div>
 
-      {/* ⭐ Rating & Reviews Section */}
 {/* ⭐ Rating & Reviews Section */}
 <motion.div
   initial={{ opacity: 0, y: 40 }}
