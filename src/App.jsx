@@ -29,6 +29,7 @@ import CategoryProduct from "./components/CategoryProduct";
 import CategoryProductUnique from "./components/CategoryProductUnique";
 import SubCategoryPage from "./components/SubCategoryPage";
 
+
 // Profile pages
 import CreateProfile from "./profile/CreateProfile";
 import GetProfile from "./profile/GetProfile";
