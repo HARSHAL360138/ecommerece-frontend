@@ -35,6 +35,7 @@ import CreateProfile from "./profile/CreateProfile";
 import GetProfile from "./profile/GetProfile";
 import EditProfile from "./profile/EditProfile";
 import ProfileWrapper from "./profile/ProfileWrapper";
+import OrderHistory from "./pages/OrderHistory";
 
 /* ✅ Protected & Public Route Components */
 const ProtectedRoute = ({ children }) => {
@@ -133,7 +134,8 @@ function App() {
               }
             />
 
-             <Route path="/address" element={<ProtectedRoute><AddressPage /> </ProtectedRoute>} />
+             <Route path="/address/:id" element={<ProtectedRoute><AddressPage /> </ProtectedRoute>} />
+             <Route path="/orders" element={<ProtectedRoute><OrderHistory /> </ProtectedRoute>} />
 
         {/* -------------- Fallback Route -------------- */}
         <Route path="*" element={<Navigate to="/" replace />} /> </Routes>
