@@ -2641,7 +2641,7 @@ const BuyNow = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await fetchWithAuth("http://localhost:5000/api/user/profile");
+        const data = await fetchWithAuth("https://ecommerce-backend-y1bv.onrender.com/api/user/profile");
         if (data?._id) {
           setFormData((prev) => ({ ...prev, userId: data._id }));
         }
@@ -2656,7 +2656,7 @@ const BuyNow = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/product/${id}`);
+        const res = await fetch(`https://ecommerce-backend-y1bv.onrender.com/api/product/${id}`);
         if (!res.ok) throw new Error("Failed to fetch product");
         const data = await res.json();
         setProduct(data);
@@ -2707,7 +2707,7 @@ const BuyNow = () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/buynow", {
+      const res = await fetch("https://ecommerce-backend-y1bv.onrender.com/api/buynow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalData),
@@ -2736,7 +2736,7 @@ const BuyNow = () => {
   // ✅ Submit Payment Details API
   const submitPayment = async (buyNowId) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/buynow/${buyNowId}/payment`, {
+      const res = await fetch(`https://ecommerce-backend-y1bv.onrender.com/api/buynow/${buyNowId}/payment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
