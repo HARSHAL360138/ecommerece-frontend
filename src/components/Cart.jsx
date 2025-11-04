@@ -140,12 +140,14 @@ import { fetchWithAuth } from "../refreshtoken/api";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 function Cart() {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
 
   const API_BASE = "https://ecommerce-backend-y1bv.onrender.com/api/cart";
   const REMOVE_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/remove";
@@ -390,11 +392,16 @@ function Cart() {
               </div>
 
               <button
-                onClick={() => toast.success("Proceeding to checkout...", { theme: "colored" })}
-                className="mt-6 w-full bg-gradient-to-r from-[#002349] to-[#957C3D] text-white font-semibold py-3 rounded-lg hover:opacity-90 transition shadow-md"
-              >
-                Proceed to Checkout
-              </button>
+  onClick={() => {
+    if (cart.length > 0) {
+      const firstProduct = cart[0].product._id; 
+      navigate(`/buynow/${firstProduct}`);
+    }
+  }}
+  className="mt-6 w-full bg-gradient-to-r from-[#002349] to-[#957C3D] text-white font-semibold py-3 rounded-lg hover:opacity-90 transition shadow-md"
+>
+  Proceed to Checkout
+</button>
 
               <button
                 onClick={clearCart}

@@ -519,7 +519,6 @@
 
 
 
-
 // src/components/Navbar.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -545,13 +544,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
+  // ✅ Simplified categories — no subcategories
   const categories = [
-    { name: "Men", sub: ["Shirts", "T-Shirts", "Jeans", "Watches"] },
-    { name: "Women", sub: ["Dresses", "Tops", "Shoes", "Bags"] },
-    { name: "Kids", sub: ["Toys", "Clothes", "Accessories"] },
-    { name: "Electronics", sub: ["Mobiles", "Laptops", "Headphones"] },
-    { name: "Home & Living", sub: ["Furniture", "Kitchen", "Decor"] },
-    { name: "Beauty", sub: ["Makeup", "Skincare", "Perfume"] },
+    { name: "Men" },
+    { name: "Women" },
+    { name: "Kids" },
+    { name: "Electronics" },
+    { name: "Home & Living" },
+    { name: "Beauty" },
   ];
 
   // ✅ Fetch Wishlist Count
@@ -706,23 +706,13 @@ const Navbar = () => {
       {/* 🔹 Desktop Categories */}
       <div className="hidden md:flex justify-center gap-8 py-2 bg-gray-50 border-t text-sm font-medium">
         {categories.map((cat, index) => (
-          <div
+          <Link
             key={index}
-            className="relative group cursor-pointer hover:text-[#957C3D]"
+            to={`/category/${cat.name.toLowerCase()}`}
+            className="cursor-pointer hover:text-[#957C3D]"
           >
             {cat.name}
-            <div className="absolute left-0 mt-2 hidden group-hover:flex flex-col bg-white shadow-md rounded-lg w-40 z-50">
-              {cat.sub.map((sub, i) => (
-                <Link
-                  key={i}
-                  to={`/category/${sub.toLowerCase()}`}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  {sub}
-                </Link>
-              ))}
-            </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -761,34 +751,16 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Categories Accordion */}
+          {/* Mobile Categories */}
           {categories.map((cat, index) => (
             <div key={index} className="border-b pb-2">
-              <button
-                className="flex justify-between items-center w-full text-left font-medium"
-                onClick={() =>
-                  setDropdownOpen(dropdownOpen === cat.name ? "" : cat.name)
-                }
+              <Link
+                to={`/category/${cat.name.toLowerCase()}`}
+                onClick={() => setMenuOpen(false)}
+                className="block font-medium hover:text-[#957C3D]"
               >
                 {cat.name}
-                <span className="text-[#957C3D]">
-                  {dropdownOpen === cat.name ? "▲" : "▼"}
-                </span>
-              </button>
-              {dropdownOpen === cat.name && (
-                <div className="mt-2 pl-4 space-y-1">
-                  {cat.sub.map((sub, i) => (
-                    <Link
-                      key={i}
-                      to={`/category/${sub.toLowerCase()}`}
-                      className="block hover:text-[#957C3D]"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {sub}
-                    </Link>
-                  ))}
-                </div>
-              )}
+              </Link>
             </div>
           ))}
         </div>
