@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import AllProducts from "./pages/AllProducts";
 import BuyNow from "./pages/BuyNow";
 import AddressPage from "./pages/AddressPage";
+import SearchPage from "./pages/SearchPage";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -136,6 +137,7 @@ function App() {
 
              <Route path="/address/:id" element={<ProtectedRoute><AddressPage /> </ProtectedRoute>} />
              <Route path="/orders" element={<ProtectedRoute><OrderHistory /> </ProtectedRoute>} />
+             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
 
         {/* -------------- Fallback Route -------------- */}
         <Route path="*" element={<Navigate to="/" replace />} /> </Routes>

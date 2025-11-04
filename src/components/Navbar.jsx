@@ -519,7 +519,258 @@
 
 
 
-// src/components/Navbar.jsx
+// // src/components/Navbar.jsx
+// import React, { useState, useEffect, useRef } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import {
+//   FaUserCircle,
+//   FaShoppingCart,
+//   FaBars,
+//   FaTimes,
+//   FaSearch,
+//   FaHeart,
+// } from "react-icons/fa";
+// import ProfileModel from "./ProfileModel";
+// import { fetchWithAuth } from "../refreshtoken/api"; // ✅ Import for authorized fetch
+
+// const Navbar = () => {
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const [dropdownOpen, setDropdownOpen] = useState("");
+//   const [isModelOpen, setIsModelOpen] = useState(false);
+//   const [isLoggedIn, setIsLoggedIn] = useState(false);
+//   const [userName, setUserName] = useState("");
+//   const [wishlistCount, setWishlistCount] = useState(0); // ✅ Wishlist count
+//   const [cartCount, setCartCount] = useState(0); // ✅ Cart count
+//   const navigate = useNavigate();
+//   const profileRef = useRef(null);
+
+//   // ✅ Simplified categories — no subcategories
+//   const categories = [
+//     { name: "Men" },
+//     { name: "Women" },
+//     { name: "Kids" },
+//     { name: "Electronics" },
+//     { name: "Home & Living" },
+//     { name: "Beauty" },
+//   ];
+
+//   // ✅ Fetch Wishlist Count
+//   const fetchWishlistCount = async () => {
+//     try {
+//       const data = await fetchWithAuth(
+//         "https://ecommerce-backend-y1bv.onrender.com/api/wishlist/count",
+//         { method: "GET" }
+//       );
+//       if (data && typeof data.count === "number") {
+//         setWishlistCount(data.count);
+//       }
+//     } catch (err) {
+//       console.error("Failed to fetch wishlist count:", err);
+//     }
+//   };
+
+//   // ✅ Fetch Cart Count
+//   const fetchCartCount = async () => {
+//     try {
+//       const data = await fetchWithAuth(
+//         "https://ecommerce-backend-y1bv.onrender.com/api/cart/count",
+//         { method: "GET" }
+//       );
+//       if (data && typeof data.count === "number") {
+//         setCartCount(data.count);
+//       }
+//     } catch (err) {
+//       console.error("Failed to fetch cart count:", err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     const user = JSON.parse(localStorage.getItem("user"));
+//     if (user) {
+//       setIsLoggedIn(true);
+//       setUserName(user.name);
+//       fetchWishlistCount(); // ✅ Wishlist count
+//       fetchCartCount(); // ✅ Cart count
+//     }
+
+//     const handleClickOutside = (event) => {
+//       if (profileRef.current && !profileRef.current.contains(event.target)) {
+//         setIsModelOpen(false);
+//       }
+//     };
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, []);
+
+//   const handleLogout = () => {
+//     localStorage.clear();
+//     setIsLoggedIn(false);
+//     setUserName("");
+//     setIsModelOpen(false);
+//     setWishlistCount(0);
+//     setCartCount(0);
+//     navigate("/");
+//   };
+
+//   return (
+//     <nav className="w-full bg-white shadow-md sticky top-0 z-50 font-sans">
+//       {/* 🔹 Top Navbar Section */}
+//       <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-b">
+//         {/* Logo */}
+//         <Link
+//           to="/"
+//           className="text-2xl sm:text-3xl font-extrabold text-[#002349] tracking-wide"
+//         >
+//           Fashion<span className="text-[#957C3D]">Hub</span>
+//         </Link>
+
+//         {/* 🔹 Search Bar (Hidden on small screens) */}
+//         <div className="hidden md:flex items-center w-1/2 border rounded-full overflow-hidden shadow-sm">
+//           <input
+//             type="text"
+//             placeholder="Search for products, brands and more..."
+//             className="flex-1 px-4 py-2 text-sm outline-none"
+//           />
+//           <button className="bg-[#002349] text-white px-4 py-2 hover:bg-[#957C3D] transition">
+//             <FaSearch />
+//           </button>
+//         </div>
+
+//         {/* 🔹 Right Icons */}
+//         <div className="flex items-center gap-4 sm:gap-6">
+//           {/* Wishlist */}
+//           <Link to="/wishlist" className="relative hover:text-[#957C3D]">
+//             <FaHeart size={20} />
+//             {wishlistCount > 0 && (
+//               <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+//                 {wishlistCount}
+//               </span>
+//             )}
+//           </Link>
+
+//           {/* Cart */}
+//           <Link to="/cart" className="relative hover:text-[#957C3D]">
+//             <FaShoppingCart size={20} />
+//             {cartCount > 0 && (
+//               <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+//                 {cartCount}
+//               </span>
+//             )}
+//           </Link>
+
+//           {/* Profile / Auth */}
+//           {isLoggedIn ? (
+//             <div className="relative" ref={profileRef}>
+//               <button
+//                 onClick={() => setIsModelOpen(!isModelOpen)}
+//                 className="flex items-center gap-1 sm:gap-2 text-gray-700 hover:text-[#957C3D] transition"
+//               >
+//                 <FaUserCircle size={22} />
+//                 <span className="hidden sm:inline font-medium">{userName}</span>
+//                 <span className="text-xs sm:text-sm">▼</span>
+//               </button>
+
+//               <ProfileModel
+//                 isOpen={isModelOpen}
+//                 onClose={() => setIsModelOpen(false)}
+//                 onLogout={handleLogout}
+//               />
+//             </div>
+//           ) : (
+//             <div className="hidden sm:flex items-center gap-3">
+//               <Link
+//                 to="/login"
+//                 className="px-4 py-1.5 text-sm font-medium text-white bg-[#002349] rounded-full hover:bg-[#957C3D] transition"
+//               >
+//                 Login
+//               </Link>
+//               <Link
+//                 to="/signup"
+//                 className="px-4 py-1.5 text-sm font-medium border border-[#002349] text-[#002349] rounded-full hover:bg-[#002349] hover:text-white transition"
+//               >
+//                 Register
+//               </Link>
+//             </div>
+//           )}
+
+//           {/* Mobile Menu Toggle */}
+//           <button
+//             className="md:hidden text-2xl focus:outline-none"
+//             onClick={() => setMenuOpen(!menuOpen)}
+//           >
+//             {menuOpen ? <FaTimes /> : <FaBars />}
+//           </button>
+//         </div>
+//       </div>
+
+//       {/* 🔹 Desktop Categories */}
+//       <div className="hidden md:flex justify-center gap-8 py-2 bg-gray-50 border-t text-sm font-medium">
+//         {categories.map((cat, index) => (
+//           <Link
+//             key={index}
+//             to={`/category/${cat.name.toLowerCase()}`}
+//             className="cursor-pointer hover:text-[#957C3D]"
+//           >
+//             {cat.name}
+//           </Link>
+//         ))}
+//       </div>
+
+//       {/* 🔹 Mobile Menu */}
+//       {menuOpen && (
+//         <div className="md:hidden bg-gray-50 border-t p-4 space-y-3 text-sm animate-slide-down">
+//           {/* Mobile Search Bar */}
+//           <div className="flex items-center border rounded-full overflow-hidden">
+//             <input
+//               type="text"
+//               placeholder="Search for products..."
+//               className="flex-1 px-3 py-2 text-sm outline-none"
+//             />
+//             <button className="bg-[#002349] text-white px-3 py-2">
+//               <FaSearch />
+//             </button>
+//           </div>
+
+//           {/* Mobile Auth Buttons */}
+//           {!isLoggedIn && (
+//             <div className="flex gap-3 mt-2">
+//               <Link
+//                 to="/login"
+//                 onClick={() => setMenuOpen(false)}
+//                 className="flex-1 text-center px-4 py-2 text-sm font-medium text-white bg-[#002349] rounded-full hover:bg-[#957C3D] transition"
+//               >
+//                 Login
+//               </Link>
+//               <Link
+//                 to="/signup"
+//                 onClick={() => setMenuOpen(false)}
+//                 className="flex-1 text-center px-4 py-2 text-sm font-medium border border-[#002349] text-[#002349] rounded-full hover:bg-[#002349] hover:text-white transition"
+//               >
+//                 Register
+//               </Link>
+//             </div>
+//           )}
+
+//           {/* Mobile Categories */}
+//           {categories.map((cat, index) => (
+//             <div key={index} className="border-b pb-2">
+//               <Link
+//                 to={`/category/${cat.name.toLowerCase()}`}
+//                 onClick={() => setMenuOpen(false)}
+//                 className="block font-medium hover:text-[#957C3D]"
+//               >
+//                 {cat.name}
+//               </Link>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </nav>
+//   );
+// };
+
+// export default Navbar;
+
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -529,68 +780,95 @@ import {
   FaTimes,
   FaSearch,
   FaHeart,
+  FaChevronDown,
 } from "react-icons/fa";
+import { ChevronRight } from "lucide-react";
 import ProfileModel from "./ProfileModel";
-import { fetchWithAuth } from "../refreshtoken/api"; // ✅ Import for authorized fetch
+import { fetchWithAuth } from "../refreshtoken/api";
+
+const BASE_URL = "https://ecommerce-backend-y1bv.onrender.com/api";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState("");
   const [isModelOpen, setIsModelOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
-  const [wishlistCount, setWishlistCount] = useState(0); // ✅ Wishlist count
-  const [cartCount, setCartCount] = useState(0); // ✅ Cart count
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [hoveredCategory, setHoveredCategory] = useState(null);
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
-  // ✅ Simplified categories — no subcategories
-  const categories = [
-    { name: "Men" },
-    { name: "Women" },
-    { name: "Kids" },
-    { name: "Electronics" },
-    { name: "Home & Living" },
-    { name: "Beauty" },
-  ];
+  // ✅ Fetch Categories & Subcategories dynamically
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/product`);
+        if (!res.ok) throw new Error("Failed to fetch categories");
+        const data = await res.json();
 
-  // ✅ Fetch Wishlist Count
+        const grouped = {};
+        data.forEach((item) => {
+          if (!item.category) return;
+          if (!grouped[item.category]) grouped[item.category] = new Set();
+          if (item.subcategory) grouped[item.category].add(item.subcategory);
+        });
+
+        const categoryData = Object.entries(grouped).map(([cat, subs]) => ({
+          category: cat,
+          subcategories: Array.from(subs),
+        }));
+
+        setCategories(categoryData);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // ✅ Fetch Wishlist Count (based on total items)
   const fetchWishlistCount = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
     try {
-      const data = await fetchWithAuth(
-        "https://ecommerce-backend-y1bv.onrender.com/api/wishlist/count",
-        { method: "GET" }
-      );
-      if (data && typeof data.count === "number") {
-        setWishlistCount(data.count);
+      const data = await fetchWithAuth(`${BASE_URL}/wishlist`, { method: "GET" });
+      if (Array.isArray(data)) {
+        setWishlistCount(data.length);
+      } else if (data?.items) {
+        setWishlistCount(data.items.length);
       }
     } catch (err) {
       console.error("Failed to fetch wishlist count:", err);
     }
   };
 
-  // ✅ Fetch Cart Count
+  // ✅ Fetch Cart Count (based on total items)
   const fetchCartCount = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
     try {
-      const data = await fetchWithAuth(
-        "https://ecommerce-backend-y1bv.onrender.com/api/cart/count",
-        { method: "GET" }
-      );
-      if (data && typeof data.count === "number") {
-        setCartCount(data.count);
+      const data = await fetchWithAuth(`${BASE_URL}/cart`, { method: "GET" });
+      if (Array.isArray(data)) {
+        setCartCount(data.length);
+      } else if (data?.items) {
+        setCartCount(data.items.length);
       }
     } catch (err) {
       console.error("Failed to fetch cart count:", err);
     }
   };
 
+  // ✅ Check login and initialize counts
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       setIsLoggedIn(true);
       setUserName(user.name);
-      fetchWishlistCount(); // ✅ Wishlist count
-      fetchCartCount(); // ✅ Cart count
+      fetchWishlistCount();
+      fetchCartCount();
     }
 
     const handleClickOutside = (event) => {
@@ -602,6 +880,7 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // ✅ Logout
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
@@ -612,9 +891,19 @@ const Navbar = () => {
     navigate("/");
   };
 
+  // ✅ Search Navigation
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm("");
+      setMenuOpen(false);
+    }
+  };
+
   return (
     <nav className="w-full bg-white shadow-md sticky top-0 z-50 font-sans">
-      {/* 🔹 Top Navbar Section */}
+      {/* 🔹 Top Navbar */}
       <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-b">
         {/* Logo */}
         <Link
@@ -624,50 +913,58 @@ const Navbar = () => {
           Fashion<span className="text-[#957C3D]">Hub</span>
         </Link>
 
-        {/* 🔹 Search Bar (Hidden on small screens) */}
-        <div className="hidden md:flex items-center w-1/2 border rounded-full overflow-hidden shadow-sm">
+        {/* 🔹 Search Bar (Desktop) */}
+        <form
+          onSubmit={handleSearch}
+          className="hidden md:flex items-center w-1/2 border rounded-full overflow-hidden shadow-sm"
+        >
           <input
             type="text"
             placeholder="Search for products, brands and more..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1 px-4 py-2 text-sm outline-none"
           />
-          <button className="bg-[#002349] text-white px-4 py-2 hover:bg-[#957C3D] transition">
+          <button
+            type="submit"
+            className="bg-[#002349] text-white px-4 py-2 hover:bg-[#957C3D] transition"
+          >
             <FaSearch />
           </button>
-        </div>
+        </form>
 
         {/* 🔹 Right Icons */}
         <div className="flex items-center gap-4 sm:gap-6">
-          {/* Wishlist */}
-          <Link to="/wishlist" className="relative hover:text-[#957C3D]">
+          {/* Wishlist Icon with Count */}
+          <Link to="/wishlist" className="relative hover:text-[#957C3D] transition">
             <FaHeart size={20} />
             {wishlistCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs font-semibold w-4 h-4 flex items-center justify-center rounded-full">
                 {wishlistCount}
               </span>
             )}
           </Link>
 
-          {/* Cart */}
-          <Link to="/cart" className="relative hover:text-[#957C3D]">
+          {/* Cart Icon with Count */}
+          <Link to="/cart" className="relative hover:text-[#957C3D] transition">
             <FaShoppingCart size={20} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs font-semibold w-4 h-4 flex items-center justify-center rounded-full">
                 {cartCount}
               </span>
             )}
           </Link>
 
-          {/* Profile / Auth */}
+          {/* Profile */}
           {isLoggedIn ? (
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setIsModelOpen(!isModelOpen)}
-                className="flex items-center gap-1 sm:gap-2 text-gray-700 hover:text-[#957C3D] transition"
+                className="flex items-center gap-2 text-gray-700 hover:text-[#957C3D] transition"
               >
                 <FaUserCircle size={22} />
                 <span className="hidden sm:inline font-medium">{userName}</span>
-                <span className="text-xs sm:text-sm">▼</span>
+                <FaChevronDown size={12} />
               </button>
 
               <ProfileModel
@@ -693,7 +990,7 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-2xl focus:outline-none"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -704,63 +1001,109 @@ const Navbar = () => {
       </div>
 
       {/* 🔹 Desktop Categories */}
-      <div className="hidden md:flex justify-center gap-8 py-2 bg-gray-50 border-t text-sm font-medium">
+      <div className="hidden md:flex justify-center gap-8 py-2 bg-gray-50 border-t text-sm font-medium relative">
         {categories.map((cat, index) => (
-          <Link
+          <div
             key={index}
-            to={`/category/${cat.name.toLowerCase()}`}
-            className="cursor-pointer hover:text-[#957C3D]"
+            className="relative group"
+            onMouseEnter={() => setHoveredCategory(cat.category)}
+            onMouseLeave={() => setHoveredCategory(null)}
           >
-            {cat.name}
-          </Link>
+            <button
+              className="hover:text-[#957C3D] transition"
+              onClick={() =>
+                navigate(`/category/${encodeURIComponent(cat.category)}`)
+              }
+            >
+              {cat.category}
+            </button>
+
+            {hoveredCategory === cat.category &&
+              cat.subcategories &&
+              cat.subcategories.length > 0 && (
+                <div className="absolute left-0 top-full mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+                  {cat.subcategories.map((sub, i) => (
+                    <button
+                      key={i}
+                      onClick={() =>
+                        navigate(
+                          `/subcategory/${encodeURIComponent(
+                            cat.category
+                          )}/${encodeURIComponent(sub)}`
+                        )
+                      }
+                      className="block w-full text-left px-4 py-2 hover:bg-[#f7f3ea] hover:text-[#957C3D] transition"
+                    >
+                      {sub}
+                    </button>
+                  ))}
+                </div>
+              )}
+          </div>
         ))}
       </div>
 
       {/* 🔹 Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-gray-50 border-t p-4 space-y-3 text-sm animate-slide-down">
-          {/* Mobile Search Bar */}
-          <div className="flex items-center border rounded-full overflow-hidden">
+        <div className="md:hidden bg-gray-50 border-t p-4 space-y-3 text-sm">
+          <form
+            onSubmit={handleSearch}
+            className="flex items-center border rounded-full overflow-hidden"
+          >
             <input
               type="text"
               placeholder="Search for products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 px-3 py-2 text-sm outline-none"
             />
-            <button className="bg-[#002349] text-white px-3 py-2">
+            <button
+              type="submit"
+              className="bg-[#002349] text-white px-3 py-2 hover:bg-[#957C3D]"
+            >
               <FaSearch />
             </button>
-          </div>
+          </form>
 
-          {/* Mobile Auth Buttons */}
-          {!isLoggedIn && (
-            <div className="flex gap-3 mt-2">
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="flex-1 text-center px-4 py-2 text-sm font-medium text-white bg-[#002349] rounded-full hover:bg-[#957C3D] transition"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                onClick={() => setMenuOpen(false)}
-                className="flex-1 text-center px-4 py-2 text-sm font-medium border border-[#002349] text-[#002349] rounded-full hover:bg-[#002349] hover:text-white transition"
-              >
-                Register
-              </Link>
-            </div>
-          )}
-
-          {/* Mobile Categories */}
           {categories.map((cat, index) => (
-            <div key={index} className="border-b pb-2">
-              <Link
-                to={`/category/${cat.name.toLowerCase()}`}
-                onClick={() => setMenuOpen(false)}
-                className="block font-medium hover:text-[#957C3D]"
+            <div key={index}>
+              <button
+                onClick={() =>
+                  setHoveredCategory(
+                    hoveredCategory === cat.category ? null : cat.category
+                  )
+                }
+                className="flex justify-between w-full py-2 font-medium text-[#002349] hover:text-[#957C3D]"
               >
-                {cat.name}
-              </Link>
+                {cat.category}
+                <FaChevronDown
+                  className={`transition-transform ${
+                    hoveredCategory === cat.category ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {hoveredCategory === cat.category &&
+                cat.subcategories &&
+                cat.subcategories.length > 0 && (
+                  <div className="ml-4 border-l pl-3 border-gray-200">
+                    {cat.subcategories.map((sub, i) => (
+                      <button
+                        key={i}
+                        onClick={() => {
+                          navigate(
+                            `/subcategory/${encodeURIComponent(
+                              cat.category
+                            )}/${encodeURIComponent(sub)}`
+                          );
+                          setMenuOpen(false);
+                        }}
+                        className="block w-full text-left py-1.5 text-sm text-gray-700 hover:text-[#957C3D]"
+                      >
+                        {sub}
+                      </button>
+                    ))}
+                  </div>
+                )}
             </div>
           ))}
         </div>
