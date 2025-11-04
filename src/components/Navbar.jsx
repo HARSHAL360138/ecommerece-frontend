@@ -782,7 +782,6 @@ import {
   FaHeart,
   FaChevronDown,
 } from "react-icons/fa";
-import { ChevronRight } from "lucide-react";
 import ProfileModel from "./ProfileModel";
 import { fetchWithAuth } from "../refreshtoken/api";
 
@@ -801,7 +800,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const profileRef = useRef(null);
 
-  // ✅ Fetch Categories & Subcategories dynamically
+  // ✅ Fetch Categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -829,39 +828,35 @@ const Navbar = () => {
     fetchCategories();
   }, []);
 
-  // ✅ Fetch Wishlist Count (based on total items)
+  // ✅ Fetch Wishlist Count
   const fetchWishlistCount = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
     try {
-      const data = await fetchWithAuth(`${BASE_URL}/wishlist`, { method: "GET" });
-      if (Array.isArray(data)) {
-        setWishlistCount(data.length);
-      } else if (data?.items) {
-        setWishlistCount(data.items.length);
+      const data = await fetchWithAuth(`${BASE_URL}/wishlist/count`, {
+        method: "GET",
+      });
+      if (data && typeof data.count === "number") {
+        setWishlistCount(data.count);
       }
     } catch (err) {
       console.error("Failed to fetch wishlist count:", err);
     }
   };
 
-  // ✅ Fetch Cart Count (based on total items)
+  // ✅ Fetch Cart Count
   const fetchCartCount = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
     try {
-      const data = await fetchWithAuth(`${BASE_URL}/cart`, { method: "GET" });
-      if (Array.isArray(data)) {
-        setCartCount(data.length);
-      } else if (data?.items) {
-        setCartCount(data.items.length);
+      const data = await fetchWithAuth(`${BASE_URL}/cart/count`, {
+        method: "GET",
+      });
+      if (data && typeof data.count === "number") {
+        setCartCount(data.count);
       }
     } catch (err) {
       console.error("Failed to fetch cart count:", err);
     }
   };
 
-  // ✅ Check login and initialize counts
+  // ✅ Check login & initialize counts
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -878,6 +873,20 @@ const Navbar = () => {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ✅ Listen for real-time updates from other components
+  useEffect(() => {
+    const updateWishlist = () => fetchWishlistCount();
+    const updateCart = () => fetchCartCount();
+
+    window.addEventListener("wishlistUpdated", updateWishlist);
+    window.addEventListener("cartUpdated", updateCart);
+
+    return () => {
+      window.removeEventListener("wishlistUpdated", updateWishlist);
+      window.removeEventListener("cartUpdated", updateCart);
+    };
   }, []);
 
   // ✅ Logout
@@ -935,21 +944,21 @@ const Navbar = () => {
 
         {/* 🔹 Right Icons */}
         <div className="flex items-center gap-4 sm:gap-6">
-          {/* Wishlist Icon with Count */}
-          <Link to="/wishlist" className="relative hover:text-[#957C3D] transition">
+          {/* Wishlist */}
+          <Link to="/wishlist" className="relative hover:text-[#957C3D]">
             <FaHeart size={20} />
             {wishlistCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs font-semibold w-4 h-4 flex items-center justify-center rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                 {wishlistCount}
               </span>
             )}
           </Link>
 
-          {/* Cart Icon with Count */}
-          <Link to="/cart" className="relative hover:text-[#957C3D] transition">
+          {/* Cart */}
+          <Link to="/cart" className="relative hover:text-[#957C3D]">
             <FaShoppingCart size={20} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs font-semibold w-4 h-4 flex items-center justify-center rounded-full">
+              <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                 {cartCount}
               </span>
             )}
