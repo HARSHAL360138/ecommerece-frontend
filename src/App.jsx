@@ -12,6 +12,9 @@ import AllProducts from "./pages/AllProducts";
 import BuyNow from "./pages/BuyNow";
 import AddressPage from "./pages/AddressPage";
 import SearchPage from "./pages/SearchPage";
+import CustomerService from "./pages/CustomerService";
+
+
 
 // Components
 import Navbar from "./components/Navbar";
@@ -91,6 +94,7 @@ function App() {
             </>
           }
         />
+<Route path="/customer-service" element={<CustomerService />} />
 
         <Route path="/login" element={ <PublicRoute> <Login /> </PublicRoute> }/>
         <Route path="/signup" element={ <PublicRoute> <Register /> </PublicRoute>}/>
