@@ -121,11 +121,186 @@
 
 
 
+// // src/pages/AllProducts.jsx
+// import React, { useEffect, useState } from "react";
+// import { motion } from "framer-motion";
+// import { useNavigate } from "react-router-dom";
+// import { FiSearch, FiX } from "react-icons/fi";
+
+// const AllProducts = () => {
+//   const [products, setProducts] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     fetch("https://ecommerce-backend-y1bv.onrender.com/api/product")
+//       .then((res) => res.json())
+//       .then((data) => {
+//         setProducts(data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         console.error("Error fetching products:", err);
+//         setLoading(false);
+//       });
+//   }, []);
+
+//   const filteredProducts = products.filter((product) =>
+//     product.name.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   if (loading)
+//     return (
+//       <div className="flex justify-center items-center h-[70vh] bg-gradient-to-b from-[#f8f8f8] to-[#ececec]">
+//         <motion.div
+//           animate={{ rotate: 360 }}
+//           transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+//           className="w-12 h-12 border-4 border-t-[#957C3D] border-[#002349] rounded-full"
+//         ></motion.div>
+//       </div>
+//     );
+
+//   return (
+//     <section className="min-h-screen bg-gradient-to-b from-[#F8F8F9] to-[#ECECEC] py-16 px-4 sm:px-8 md:px-12">
+//       {/* Heading */}
+//      <div className="flex justify-center items-center mb-10">
+//   <motion.h1
+//     className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-[#002349] tracking-wide leading-tight drop-shadow-[0_3px_4px_rgba(0,0,0,0.15)]"
+//     initial={{ opacity: 0, y: 30 }}
+//     whileInView={{ opacity: 1, y: 0 }}
+//   >
+//     <span className="text-[#002349] font-serif">Explore</span>{" "}
+//     <span className="text-[#957C3D] font-serif italic">
+//       Our Products
+//     </span>
+//   </motion.h1>
+// </div>
+
+
+
+
+//       {/* Realistic Luxury Search Bar */}
+//       <div className="flex justify-center mb-12">
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           whileInView={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.6 }}
+//           className="relative w-full sm:w-2/3 md:w-1/2"
+//         >
+//           {/* Outer Container */}
+//           <div className="flex items-center bg-white/90 backdrop-blur-md rounded-full border border-[#d1c8a6] shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 focus-within:ring-2 focus-within:ring-[#957C3D]/60">
+//             {/* Properly Aligned Icon */}
+//             <div className="pl-5 flex items-center justify-center">
+//               <FiSearch className="text-[#957C3D] text-xl" />
+//             </div>
+
+//             {/* Input Field */}
+//             <input
+//               type="text"
+//               placeholder="Search luxury collections..."
+//               value={search}
+//               onChange={(e) => setSearch(e.target.value)}
+//               className="w-full py-3.5 px-4 text-gray-800 bg-transparent focus:outline-none placeholder:text-gray-400 text-[15px] font-medium"
+//             />
+
+//             {/* Clear Icon */}
+//             {search && (
+//               <button
+//                 onClick={() => setSearch("")}
+//                 className="pr-5 text-gray-400 hover:text-[#957C3D] transition-all"
+//               >
+//                 <FiX className="text-lg" />
+//               </button>
+//             )}
+//           </div>
+//         </motion.div>
+//       </div>
+
+//       {/* Product Grid - 5 per row */}
+//       <motion.div
+//         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8"
+//         initial={{ opacity: 0 }}
+//         whileInView={{ opacity: 1 }}
+//         transition={{ duration: 0.7 }}
+//       >
+//         {filteredProducts.length > 0 ? (
+//           filteredProducts.map((product) => (
+//             <motion.div
+//               key={product._id}
+//               whileHover={{
+//                 scale: 1.05,
+//                 boxShadow:
+//                   "0 8px 30px rgba(0,35,73,0.15), 0 0 20px rgba(149,124,61,0.25)",
+//               }}
+//               transition={{ type: "spring", stiffness: 200 }}
+//               className="group bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer transform transition-all duration-500 hover:-translate-y-2"
+//               onClick={() => navigate(`/product/${product._id}`)}
+//             >
+//               {/* Product Image */}
+//               <div className="relative overflow-hidden">
+//                 <motion.img
+//                   src={
+//                     product.images && product.images.length > 0
+//                       ? product.images[0]
+//                       : "https://via.placeholder.com/400x500?text=No+Image"
+//                   }
+//                   alt={product.name}
+//                   className="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110"
+//                 />
+//                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+//               </div>
+
+//               {/* Product Info */}
+//               <div className="p-4 bg-gradient-to-b from-white to-[#FAFAFA]">
+//                 <h5 className="text-sm font-semibold text-[#002349] truncate">
+//                   {product.name}
+//                 </h5>
+//                 <p className="text-xs text-gray-500 mb-2">{product.brand}</p>
+//                 <div className="flex justify-between items-center">
+//                   <p className="text-base font-bold text-[#957C3D]">
+//                     ₹{product.basePrice}
+//                   </p>
+//                   <motion.button
+//                     whileTap={{ scale: 0.9 }}
+//                     className="text-xs px-3 py-1 rounded-full border border-[#957C3D] text-[#957C3D] font-medium hover:bg-[#957C3D] hover:text-white transition-all"
+//                   >
+//                     View
+//                   </motion.button>
+//                 </div>
+//               </div>
+//             </motion.div>
+//           ))
+//         ) : (
+//           <p className="text-gray-600 text-center col-span-full text-lg">
+//             No products found.
+//           </p>
+//         )}
+//       </motion.div>
+//     </section>
+//   );
+// };
+
+// export default AllProducts;
+
+
+
+
+
+
+
+
+
+
+
 // src/pages/AllProducts.jsx
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FiSearch, FiX } from "react-icons/fi";
+import { fetchWithAuth } from "../refreshtoken/api"; // handles access & refresh tokens
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
@@ -133,6 +308,7 @@ const AllProducts = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Fetch all products
   useEffect(() => {
     fetch("https://ecommerce-backend-y1bv.onrender.com/api/product")
       .then((res) => res.json())
@@ -146,6 +322,32 @@ const AllProducts = () => {
       });
   }, []);
 
+  // Add to Cart Handler
+  const handleAddToCart = async (productId, quantity = 1) => {
+    if (!productId) return toast.error("Product not found");
+
+    try {
+      const data = await fetchWithAuth(
+        "https://ecommerce-backend-y1bv.onrender.com/api/cart/add",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, quantity }),
+        }
+      );
+
+      if (data.success) {
+        toast.success("✅ Product added to cart successfully!");
+      } else {
+        toast.error(data.message || "⚠️ Failed to add to cart");
+      }
+    } catch (err) {
+      console.error("Add to Cart Error:", err);
+      toast.error("❌ Something went wrong while adding to cart");
+    }
+  };
+
+  // Search filter
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -162,25 +364,23 @@ const AllProducts = () => {
     );
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-[#F8F8F9] to-[#ECECEC] py-16 px-4 sm:px-8 md:px-12">
+    <section className="min-h-screen bg-gradient-to-b from-[#f9f9f9] via-[#f3f2ee] to-[#e9e7e3] py-20 px-6">
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {/* Heading */}
-     <div className="flex justify-center items-center mb-10">
-  <motion.h1
-    className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-[#002349] tracking-wide leading-tight drop-shadow-[0_3px_4px_rgba(0,0,0,0.15)]"
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-  >
-    <span className="text-[#002349] font-serif">Explore</span>{" "}
-    <span className="text-[#957C3D] font-serif italic">
-      Our Products
-    </span>
-  </motion.h1>
-</div>
+      <div className="flex justify-center items-center mb-12">
+        <motion.h1
+          className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-center text-[#002349] tracking-wide drop-shadow-md"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          Explore Our{" "}
+          <span className="text-[#957C3D] drop-shadow-md italic">Exclusive Collection</span>
+        </motion.h1>
+      </div>
 
-
-
-
-      {/* Realistic Luxury Search Bar */}
+      {/* Search Bar */}
       <div className="flex justify-center mb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -188,14 +388,10 @@ const AllProducts = () => {
           transition={{ duration: 0.6 }}
           className="relative w-full sm:w-2/3 md:w-1/2"
         >
-          {/* Outer Container */}
-          <div className="flex items-center bg-white/90 backdrop-blur-md rounded-full border border-[#d1c8a6] shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 focus-within:ring-2 focus-within:ring-[#957C3D]/60">
-            {/* Properly Aligned Icon */}
+          <div className="flex items-center bg-white/90 backdrop-blur-md rounded-full border border-[#d1c8a6] shadow-[inset_0_1px_3px_rgba(255,255,255,0.5),0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden focus-within:ring-2 focus-within:ring-[#957C3D]/60">
             <div className="pl-5 flex items-center justify-center">
               <FiSearch className="text-[#957C3D] text-xl" />
             </div>
-
-            {/* Input Field */}
             <input
               type="text"
               placeholder="Search luxury collections..."
@@ -203,8 +399,6 @@ const AllProducts = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full py-3.5 px-4 text-gray-800 bg-transparent focus:outline-none placeholder:text-gray-400 text-[15px] font-medium"
             />
-
-            {/* Clear Icon */}
             {search && (
               <button
                 onClick={() => setSearch("")}
@@ -217,57 +411,90 @@ const AllProducts = () => {
         </motion.div>
       </div>
 
-      {/* Product Grid - 5 per row */}
+      {/* Product Grid */}
       <motion.div
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8"
+        className="
+          grid 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4 
+          xl:grid-cols-5 
+          gap-10
+        "
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 0.7 }}
       >
         {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
+          filteredProducts.map((product, index) => (
             <motion.div
               key={product._id}
-              whileHover={{
-                scale: 1.05,
-                boxShadow:
-                  "0 8px 30px rgba(0,35,73,0.15), 0 0 20px rgba(149,124,61,0.25)",
-              }}
-              transition={{ type: "spring", stiffness: 200 }}
-              className="group bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer transform transition-all duration-500 hover:-translate-y-2"
+              className="
+                group relative 
+                bg-white 
+                rounded-2xl 
+                shadow-[0_5px_25px_rgba(0,0,0,0.08)] 
+                overflow-hidden 
+                transition-all duration-500 
+                hover:shadow-[0_15px_40px_rgba(0,0,0,0.15)] 
+                hover:-translate-y-2 
+                cursor-pointer
+              "
               onClick={() => navigate(`/product/${product._id}`)}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               {/* Product Image */}
-              <div className="relative overflow-hidden">
-                <motion.img
+              <div className="relative aspect-[4/5] overflow-hidden bg-[#f4f4f4]">
+                <img
                   src={
                     product.images && product.images.length > 0
                       ? product.images[0]
                       : "https://via.placeholder.com/400x500?text=No+Image"
                   }
                   alt={product.name}
-                  className="w-full aspect-[4/5] object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#002349]/60 via-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+
+                {/* Floating Buttons */}
+                <div className="absolute inset-x-0 bottom-5 flex justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                  <button
+                    className="bg-[#002349]/90 text-white text-xs sm:text-sm px-4 py-2 rounded-full hover:bg-[#001a33] transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/product/${product._id}`);
+                    }}
+                  >
+                    View
+                  </button>
+                  <button
+                    className="bg-[#957C3D]/90 text-white text-xs sm:text-sm px-4 py-2 rounded-full hover:bg-[#bfa665] transition-all duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product._id);
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
 
               {/* Product Info */}
-              <div className="p-4 bg-gradient-to-b from-white to-[#FAFAFA]">
-                <h5 className="text-sm font-semibold text-[#002349] truncate">
+              <div className="p-5 text-left">
+                <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">
+                  {product.brand || "Exclusive Brand"}
+                </p>
+                <h5 className="text-lg font-semibold text-[#002349] leading-tight truncate group-hover:text-[#957C3D] transition-colors duration-300">
                   {product.name}
                 </h5>
-                <p className="text-xs text-gray-500 mb-2">{product.brand}</p>
-                <div className="flex justify-between items-center">
-                  <p className="text-base font-bold text-[#957C3D]">
-                    ₹{product.basePrice}
-                  </p>
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    className="text-xs px-3 py-1 rounded-full border border-[#957C3D] text-[#957C3D] font-medium hover:bg-[#957C3D] hover:text-white transition-all"
-                  >
-                    View
-                  </motion.button>
-                </div>
+                <div className="w-10 h-[2px] bg-[#957C3D] mt-2 mb-3 opacity-60"></div>
+                <p className="text-xl font-bold text-[#957C3D]">
+                  ₹{product.basePrice?.toLocaleString("en-IN")}
+                </p>
               </div>
             </motion.div>
           ))
@@ -282,4 +509,3 @@ const AllProducts = () => {
 };
 
 export default AllProducts;
-
