@@ -254,17 +254,21 @@ function Cart() {
           boxShadow: "0 4px 15px rgba(0,0,0,0.15)",
         }}
       />
-
       {/* Navigation Buttons */}
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+
       <div className="flex justify-between max-w-6xl mx-auto mb-6">
         <Link
-          to="/hero-section"
+          to="/Home"
           className="bg-[#002349] text-white px-4 py-2 rounded-md hover:bg-[#001833] transition shadow-md"
         >
           ← Back
         </Link>
         <Link
-          to="/home"
+          to="/Home"
           className="bg-[#957C3D] text-white px-4 py-2 rounded-md hover:bg-[#7e682f] transition shadow-md"
         >
           🏠 Home
