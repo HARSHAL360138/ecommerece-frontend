@@ -133,8 +133,6 @@
 
 // // export default Cart;
 
-
-
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../refreshtoken/api";
 import { Link } from "react-router-dom";
@@ -150,9 +148,12 @@ function Cart() {
   const navigate = useNavigate();
 
   const API_BASE = "https://ecommerce-backend-y1bv.onrender.com/api/cart";
-  const REMOVE_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/remove";
-  const UPDATE_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/update";
-  const CLEAR_API = "https://ecommerce-backend-y1bv.onrender.com/api/cart/clear";
+  const REMOVE_API =
+    "https://ecommerce-backend-y1bv.onrender.com/api/cart/remove";
+  const UPDATE_API =
+    "https://ecommerce-backend-y1bv.onrender.com/api/cart/update";
+  const CLEAR_API =
+    "https://ecommerce-backend-y1bv.onrender.com/api/cart/clear";
 
   const fetchCart = async () => {
     try {
@@ -231,7 +232,8 @@ function Cart() {
     fetchCart();
   }, []);
 
-  if (loading) return <p className="text-center mt-8 text-gray-600">Loading...</p>;
+  if (loading)
+    return <p className="text-center mt-8 text-gray-600">Loading...</p>;
   if (error) return <p className="text-center text-red-500 mt-8">{error}</p>;
 
   return (
@@ -273,7 +275,9 @@ function Cart() {
         <div className="flex flex-col lg:flex-row">
           {/* Cart Table */}
           <div className="flex-1 p-6 overflow-x-auto">
-            <h1 className="text-3xl font-bold text-[#002349] mb-6">🛒 Shopping Cart</h1>
+            <h1 className="text-3xl font-bold text-[#002349] mb-6">
+              🛒 Shopping Cart
+            </h1>
 
             {cart.length === 0 ? (
               <div className="text-center py-20">
@@ -288,7 +292,7 @@ function Cart() {
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-[#002349] to-[#957C3D] text-white">
+                  <tr className="bg-[#002349] text-white">
                     <th className="p-4 rounded-tl-lg">Product</th>
                     <th className="p-4">Price</th>
                     <th className="p-4">Quantity</th>
@@ -297,7 +301,10 @@ function Cart() {
                 </thead>
                 <tbody>
                   {cart.map((item) => (
-                    <tr key={item._id} className="border-b hover:bg-gray-50 transition">
+                    <tr
+                      key={item._id}
+                      className="border-b hover:bg-gray-50 transition"
+                    >
                       <td className="p-4 flex items-center gap-3">
                         <button
                           onClick={() => removeFromCart(item.product._id)}
@@ -330,7 +337,10 @@ function Cart() {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() =>
-                              updateQuantity(item.product._id, item.quantity - 1)
+                              updateQuantity(
+                                item.product._id,
+                                item.quantity - 1
+                              )
                             }
                             className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full font-bold hover:bg-gray-300 transition"
                           >
@@ -339,7 +349,10 @@ function Cart() {
                           <span>{item.quantity}</span>
                           <button
                             onClick={() =>
-                              updateQuantity(item.product._id, item.quantity + 1)
+                              updateQuantity(
+                                item.product._id,
+                                item.quantity + 1
+                              )
                             }
                             className="bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full font-bold hover:bg-gray-300 transition"
                           >
@@ -392,20 +405,20 @@ function Cart() {
               </div>
 
               <button
-  onClick={() => {
-    if (cart.length > 0) {
-      const firstProduct = cart[0].product._id; 
-      navigate(`/buynow/${firstProduct}`);
-    }
-  }}
-  className="mt-6 w-full bg-gradient-to-r from-[#002349] to-[#957C3D] text-white font-semibold py-3 rounded-lg hover:opacity-90 transition shadow-md"
->
-  Proceed to Checkout
-</button>
+                onClick={() => {
+                  if (cart.length > 0) {
+                    const firstProduct = cart[0].product._id;
+                    navigate(`/buynow/${firstProduct}`);
+                  }
+                }}
+                className="mt-6 w-full bg-[#002349] text-white font-semibold py-3 rounded-lg hover:bg-[#001833] transition shadow-md"
+              >
+                Proceed to Checkout
+              </button>
 
               <button
                 onClick={clearCart}
-                className="mt-3 w-full bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition"
+                className="mt-3 w-full bg-[#957C3D] text-white font-semibold py-3 rounded-lg hover:bg-[#b49345] transition"
               >
                 Clear Cart
               </button>
