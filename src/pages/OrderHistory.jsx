@@ -373,7 +373,7 @@ function OrderHistory() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleReorder(product._id)}
-                      className="flex items-center gap-1 bg-[#957C3D] text-white px-4 py-2 rounded-lg hover:bg-[#7b6533] transition text-sm font-medium"
+                      className="flex items-center gap-1 bg-[#002349] text-white px-4 py-2 rounded-lg hover:bg-[#7b6533] transition text-sm font-medium"
                     >
                       <RotateCcw size={16} /> Reorder
                     </button>
