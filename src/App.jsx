@@ -160,7 +160,6 @@
 
 
 
-
 // src/App.jsx
 import React, { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
@@ -176,12 +175,13 @@ import BuyNow from "./pages/BuyNow";
 import AddressPage from "./pages/AddressPage";
 import SearchPage from "./pages/SearchPage";
 import CustomerService from "./pages/CustomerService";
-import OrderHistory from "./pages/OrderHistory";
+import OrderHistory from "./pages/OrderHistory"; // ✅ already imported
 
 // Newly added pages (Footer links)
 import HelpCenter from "./pages/HelpCenter";
 import PoliciesAndRules from "./pages/PoliciesAndRules";
 import OnlineReturnsPolicy from "./pages/OnlineReturnsPolicy";
+import FAQs from "./pages/FAQs"; // ✅ newly added
 
 // Components
 import Navbar from "./components/Navbar";
@@ -202,11 +202,11 @@ import SubCategoryPage from "./components/SubCategoryPage";
 
 // Profile Pages
 import CreateProfile from "./profile/CreateProfile";
-import GetProfile from "./profile/GetProfile";
+import GetProfile from "./profile/GetProfile"; // ✅ correct import path
 import EditProfile from "./profile/EditProfile";
 import ProfileWrapper from "./profile/ProfileWrapper";
 
-// /* ✅ ScrollToTop Component */
+// ✅ ScrollToTop Component
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -237,7 +237,9 @@ function App() {
     location.pathname === "/login" || location.pathname === "/signup";
 
   // Hide only Footer on standalone info pages
-  const hideFooterOnly = ["/help", "/policies", "/returns"].includes(location.pathname);
+  const hideFooterOnly = ["/help", "/policies", "/returns", "/faqs"].includes(
+    location.pathname
+  );
 
   return (
     <>
@@ -454,6 +456,25 @@ function App() {
           }
         />
 
+        {/* ------------------- Newly Added ------------------- */}
+        <Route
+          path="/getprofile"
+          element={
+            <ProtectedRoute>
+              <GetProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orderhistory"
+          element={
+            <ProtectedRoute>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/faqs" element={<FAQs />} />
+
         {/* ------------------- Info Pages (from Footer) ------------------- */}
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/policies" element={<PoliciesAndRules />} />
@@ -473,3 +494,4 @@ function App() {
 }
 
 export default App;
+
