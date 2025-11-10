@@ -138,6 +138,9 @@
 
 
 
+
+
+
 // src/components/Footer.jsx
 import React, { useState } from "react";
 import {
@@ -155,6 +158,7 @@ const Footer = () => {
   const [email, setEmail] = useState("");
   const [showReportModal, setShowReportModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
+  const [showVoucherModal, setShowVoucherModal] = useState(false); // ✅ Added new modal state
   const navigate = useNavigate();
 
   // Newsletter subscribe
@@ -275,9 +279,9 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* My Account */}
+        {/* Quick Links */}
         <div>
-          <h3 className="text-[#957C3D] font-semibold mb-3">My Account</h3>
+          <h3 className="text-[#957C3D] font-semibold mb-3">Quick Links</h3>
           <ul className="space-y-2">
             <li>
               <button onClick={() => navigate("/getprofile")} className="hover:text-[#957C3D] transition-all duration-300">
@@ -302,14 +306,49 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Quick Links */}
+        {/* ===== My Account (Updated) ===== */}
         <div>
-          <h3 className="text-[#957C3D] font-semibold mb-3">Quick Links</h3>
+          <h3 className="text-[#957C3D] font-semibold mb-3">My Account</h3>
           <ul className="space-y-2">
-            <li><a href="#" className="hover:text-[#957C3D] transition-all duration-300">Redeem Voucher</a></li>
-            <li><a href="#" className="hover:text-[#957C3D] transition-all duration-300">Product Support</a></li>
-            <li><a href="#" className="hover:text-[#957C3D] transition-all duration-300">Wishlist</a></li>
-            <li><a href="#" className="hover:text-[#957C3D] transition-all duration-300">Checkout</a></li>
+            {/* 1️⃣ Redeem Voucher Modal */}
+            <li>
+              <button
+                onClick={() => setShowVoucherModal(true)}
+                className="hover:text-[#957C3D] transition-all duration-300"
+              >
+                Redeem Voucher
+              </button>
+            </li>
+
+            {/* 2️⃣ Product Support Page */}
+            <li>
+              <button
+                onClick={() => navigate("/product-support")}
+                className="hover:text-[#957C3D] transition-all duration-300"
+              >
+                Product Support
+              </button>
+            </li>
+
+            {/* 3️⃣ Wishlist Page */}
+            <li>
+              <button
+                onClick={() => navigate("/wishlist")}
+                className="hover:text-[#957C3D] transition-all duration-300"
+              >
+                Wishlist
+              </button>
+            </li>
+
+            {/* 4️⃣ Membership Page */}
+            <li>
+              <button
+                onClick={() => navigate("/membership")}
+                className="hover:text-[#957C3D] transition-all duration-300"
+              >
+                Membership
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -354,48 +393,95 @@ const Footer = () => {
         </div>
       )}
 
-      {/* ===== Store Location Map Modal ===== */}
-{showMapModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl overflow-hidden">
+{/* ===== Premium Voucher Redemption Modal ===== */}
+{showVoucherModal && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+    <div className="bg-white rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.15)] w-[90%] max-w-md overflow-hidden border border-gray-100">
+      
       {/* Header */}
-      <div className="flex justify-between items-center bg-[#002349] text-white px-5 py-3">
-        <h2 className="text-lg font-semibold">Store Location</h2>
+      <div className="flex justify-between items-center bg-gradient-to-r from-[#002349] to-[#013d77] text-white px-6 py-4">
+        <h2 className="text-lg font-semibold tracking-wide">🎁 Redeem Your Voucher</h2>
         <button
-          onClick={() => setShowMapModal(false)}
-          className="text-white hover:text-gray-300 text-2xl leading-none"
+          onClick={() => setShowVoucherModal(false)}
+          className="text-white/80 hover:text-white text-2xl leading-none transition-all"
         >
           &times;
         </button>
       </div>
 
-      {/* Map */}
-      <div className="p-4">
-        <iframe
-          title="Store Location"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.109585557895!2d85.3240!3d27.7172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19c3f59e7e3b%3A0x3e36b4cdeabbf66!2sKathmandu%2C%20Nepal!5e0!3m2!1sen!2sin!4v1708434211655!5m2!1sen!2sin"
-          width="100%"
-          height="380"
-          loading="lazy"
-          allowFullScreen
-          referrerPolicy="no-referrer-when-downgrade"
-          className="rounded-lg border border-gray-200"
-        ></iframe>
+      {/* Body */}
+      <div className="p-6">
+        <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+          Enter your unique voucher code below to unlock exclusive rewards and premium offers.
+        </p>
+
+        <input
+          type="text"
+          placeholder="Enter Voucher Code"
+          className="w-full border border-gray-300 focus:border-[#957C3D] focus:ring-1 focus:ring-[#957C3D]/70 rounded-lg px-4 py-2.5 text-sm placeholder-gray-400 outline-none mb-5 transition-all"
+        />
+
+        <button
+          onClick={() => {
+            toast.success("Voucher redeemed successfully!");
+            setShowVoucherModal(false);
+          }}
+          className="w-full bg-[#957C3D] hover:bg-[#b48b45] text-white font-medium rounded-lg py-2.5 text-sm tracking-wide transition-all shadow-md hover:shadow-lg"
+        >
+          Redeem Now
+        </button>
       </div>
 
       {/* Footer */}
-      <div className="flex justify-center p-4 border-t">
-        <button
-          onClick={() => setShowMapModal(false)}
-          className="bg-[#002349] hover:bg-[#0b3a68] text-white px-6 py-2 rounded-full text-sm font-medium transition-all"
-        >
-          Close
-        </button>
+      <div className="text-center text-[11px] text-gray-400 pb-4">
+        *Valid only for a limited time. Terms apply.
       </div>
     </div>
   </div>
 )}
 
+
+      {/* ===== Store Location Map Modal ===== */}
+      {showMapModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl w-[90%] max-w-xl overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-center bg-[#002349] text-white px-5 py-3">
+              <h2 className="text-lg font-semibold">Store Location</h2>
+              <button
+                onClick={() => setShowMapModal(false)}
+                className="text-white hover:text-gray-300 text-2xl leading-none"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Map */}
+            <div className="p-4">
+              <iframe
+                title="Store Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.109585557895!2d85.3240!3d27.7172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19c3f59e7e3b%3A0x3e36b4cdeabbf66!2sKathmandu%2C%20Nepal!5e0!3m2!1sen!2sin!4v1708434211655!5m2!1sen!2sin"
+                width="100%"
+                height="380"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                className="rounded-lg border border-gray-200"
+              ></iframe>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-center p-4 border-t">
+              <button
+                onClick={() => setShowMapModal(false)}
+                className="bg-[#002349] hover:bg-[#0b3a68] text-white px-6 py-2 rounded-full text-sm font-medium transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Toast Container */}
       <ToastContainer position="top-right" autoClose={3000} />
