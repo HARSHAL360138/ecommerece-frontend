@@ -187,7 +187,7 @@ function Login() {
             className="mb-8"
           >
             <h1 className="text-5xl font-extrabold tracking-tight drop-shadow-2xl">
-              <span className="text-[#053f7c]">Fashion</span>
+              <span className="text-[#fdfeff]">Fashion</span>
               <span className="text-[#c9a64d]">Hub</span>
             </h1>
           </motion.div>
