@@ -568,7 +568,7 @@ const HeroSection = () => {
 
   return (
     <section
-      className="relative w-full h-[70vh] sm:h-[85vh] md:h-[95vh] overflow-hidden select-none bg-black"
+      className="relative w-full h-[70vh] sm:h-[100vh] md:h-[100vh] overflow-hidden select-none bg-black"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
