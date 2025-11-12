@@ -680,6 +680,7 @@ import AddressPage from "./pages/AddressPage";
 import SearchPage from "./pages/SearchPage";
 import CustomerService from "./pages/CustomerService";
 import OrderHistory from "./pages/OrderHistory";
+import OfferSection from "./components/OfferSection"; 
 
 // Newly added pages (Footer links)
 import HelpCenter from "./pages/HelpCenter";
@@ -697,7 +698,6 @@ import HeroSection from "./components/HeroSection";
 import WhyShopWithUs from "./components/WhyShopWithUs";
 import OurProducts from "./components/OurProducts";
 import Category from "./components/Category";
-import SubscriptionOffer from "./components/SubscriptionOffer";
 import Testimonials from "./components/Testimonials";
 import Wishlist from "./components/Wishlist";
 import Cart from "./components/Cart";
@@ -770,7 +770,6 @@ function App() {
               <WhyShopWithUs />
               <OurProducts />
               <Category />
-              <SubscriptionOffer />
               <Testimonials />
               <AiChatModel />
             </>
@@ -785,7 +784,6 @@ function App() {
               <WhyShopWithUs />
               <OurProducts />
               <Category />
-              <SubscriptionOffer />
               <Testimonials />
               <AiChatModel />
             </>
@@ -793,6 +791,7 @@ function App() {
         />
 
         <Route path="/customer-service" element={<CustomerService />} />
+<Route path="/OfferSection" element={<OfferSection />} />
 
         <Route
           path="/login"

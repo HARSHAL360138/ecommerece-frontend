@@ -771,6 +771,9 @@
 
 // // export default Navbar;
 
+
+
+// // Fetch categories from API and display subcategories without transparency
 // import React, { useState, useEffect, useRef } from "react";
 // import { Link, useNavigate } from "react-router-dom";
 // import {
@@ -1123,247 +1126,11 @@
 
 // export default Navbar;
 
-// import React, { useState, useEffect, useRef } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import {
-//   FaUserCircle,
-//   FaShoppingCart,
-//   FaBars,
-//   FaTimes,
-//   FaSearch,
-//   FaHeart,
-// } from "react-icons/fa";
-// import ProfileModel from "./ProfileModel";
-// import { fetchWithAuth } from "../refreshtoken/api";
-
-// const Navbar = () => {
-//   const [menuOpen, setMenuOpen] = useState(false);
-//   const [dropdownOpen, setDropdownOpen] = useState("");
-//   const [isModelOpen, setIsModelOpen] = useState(false);
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-//   const [userName, setUserName] = useState("");
-//   const [wishlistCount, setWishlistCount] = useState(0);
-//   const [cartCount, setCartCount] = useState(0);
-//   const [isScrolled, setIsScrolled] = useState(false); // ✅ Track scroll
-//   const navigate = useNavigate();
-//   const profileRef = useRef(null);
-
-//   const categories = [
-//     { name: "Men" },
-//     { name: "Women" },
-//     { name: "Kids" },
-//     { name: "Electronics" },
-//     { name: "Home & Living" },
-//     { name: "Beauty" },
-//   ];
-
-//   const fetchWishlistCount = async () => {
-//     try {
-//       const data = await fetchWithAuth(
-//         "https://ecommerce-backend-y1bv.onrender.com/api/wishlist/count",
-//         { method: "GET" }
-//       );
-//       if (data && typeof data.count === "number") setWishlistCount(data.count);
-//     } catch (err) {
-//       console.error("Failed to fetch wishlist count:", err);
-//     }
-//   };
-
-//   const fetchCartCount = async () => {
-//     try {
-//       const data = await fetchWithAuth(
-//         "https://ecommerce-backend-y1bv.onrender.com/api/cart/count",
-//         { method: "GET" }
-//       );
-//       if (data && typeof data.count === "number") setCartCount(data.count);
-//     } catch (err) {
-//       console.error("Failed to fetch cart count:", err);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const user = JSON.parse(localStorage.getItem("user"));
-//     if (user) {
-//       setIsLoggedIn(true);
-//       setUserName(user.name);
-//       fetchWishlistCount();
-//       fetchCartCount();
-//     }
-
-//     const handleScroll = () => {
-//       if (window.scrollY > 60) setIsScrolled(true);
-//       else setIsScrolled(false);
-//     };
-
-//     window.addEventListener("scroll", handleScroll);
-
-//     const handleClickOutside = (event) => {
-//       if (profileRef.current && !profileRef.current.contains(event.target)) {
-//         setIsModelOpen(false);
-//       }
-//     };
-//     document.addEventListener("mousedown", handleClickOutside);
-
-//     return () => {
-//       window.removeEventListener("scroll", handleScroll);
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   }, []);
-
-//   const handleLogout = () => {
-//     localStorage.clear();
-//     setIsLoggedIn(false);
-//     setUserName("");
-//     setIsModelOpen(false);
-//     setWishlistCount(0);
-//     setCartCount(0);
-//     navigate("/");
-//   };
-
-//   return (
-//     <nav
-//       className={`w-full fixed top-0 z-50 font-sans transition-all duration-500 ${
-//         isScrolled
-//           ? "bg-white shadow-md text-gray-800"
-//           : "bg-transparent text-white"
-//       }`}
-//     >
-//       {/* 🔹 Top Navbar Section */}
-//       <div className="flex justify-between items-center px-4 sm:px-6 py-3">
-//         {/* Logo */}
-//         <Link
-//           to="/"
-//           className={`text-2xl sm:text-3xl font-extrabold tracking-wide ${
-//             isScrolled ? "text-[#002349]" : "text-white"
-//           }`}
-//         >
-//           Fashion<span className="text-[#957C3D]">Hub</span>
-//         </Link>
-
-//         {/* 🔹 Search Bar */}
-//         <div
-//           className={`hidden md:flex items-center w-1/2 border rounded-full overflow-hidden shadow-sm ${
-//             isScrolled ? "border-gray-300" : "border-white"
-//           }`}
-//         >
-//           <input
-//             type="text"
-//             placeholder="Search for products, brands and more..."
-//             className={`flex-1 px-4 py-2 text-sm outline-none ${
-//               isScrolled ? "text-black" : "text-white placeholder-white"
-//             } bg-transparent`}
-//           />
-//           <button
-//             className={`px-4 py-2 transition ${
-//               isScrolled
-//                 ? "bg-[#002349] text-white hover:bg-[#957C3D]"
-//                 : "bg-[#957C3D] text-white"
-//             }`}
-//           >
-//             <FaSearch />
-//           </button>
-//         </div>
-
-//         {/* 🔹 Right Icons */}
-//         <div className="flex items-center gap-4 sm:gap-6">
-//           {/* Wishlist */}
-//           <Link to="/wishlist" className="relative hover:text-[#957C3D]">
-//             <FaHeart size={20} />
-//             {wishlistCount > 0 && (
-//               <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-//                 {wishlistCount}
-//               </span>
-//             )}
-//           </Link>
-
-//           {/* Cart */}
-//           <Link to="/cart" className="relative hover:text-[#957C3D]">
-//             <FaShoppingCart size={20} />
-//             {cartCount > 0 && (
-//               <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-//                 {cartCount}
-//               </span>
-//             )}
-//           </Link>
-
-//           {/* Profile / Auth */}
-//           {isLoggedIn ? (
-//             <div className="relative" ref={profileRef}>
-//               <button
-//                 onClick={() => setIsModelOpen(!isModelOpen)}
-//                 className="flex items-center gap-1 sm:gap-2 hover:text-[#957C3D] transition"
-//               >
-//                 <FaUserCircle size={22} />
-//                 <span className="hidden sm:inline font-medium">{userName}</span>
-//                 <span className="text-xs sm:text-sm">▼</span>
-//               </button>
-
-//               <ProfileModel
-//                 isOpen={isModelOpen}
-//                 onClose={() => setIsModelOpen(false)}
-//                 onLogout={handleLogout}
-//               />
-//             </div>
-//           ) : (
-//             <div className="hidden sm:flex items-center gap-3">
-//               <Link
-//                 to="/login"
-//                 className={`px-4 py-1.5 text-sm font-medium rounded-full transition ${
-//                   isScrolled
-//                     ? "bg-[#002349] text-white hover:bg-[#957C3D]"
-//                     : "border border-white text-white hover:bg-white hover:text-[#002349]"
-//                 }`}
-//               >
-//                 Login
-//               </Link>
-//               <Link
-//                 to="/signup"
-//                 className={`px-4 py-1.5 text-sm font-medium rounded-full transition ${
-//                   isScrolled
-//                     ? "border border-[#002349] text-[#002349] hover:bg-[#002349] hover:text-white"
-//                     : "border border-white text-white hover:bg-white hover:text-[#002349]"
-//                 }`}
-//               >
-//                 Register
-//               </Link>
-//             </div>
-//           )}
-
-//           {/* Mobile Menu Toggle */}
-//           <button
-//             className="md:hidden text-2xl focus:outline-none"
-//             onClick={() => setMenuOpen(!menuOpen)}
-//           >
-//             {menuOpen ? <FaTimes /> : <FaBars />}
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* 🔹 Desktop Categories */}
-//       <div
-//         className={`hidden md:flex justify-center gap-8 py-2 border-t text-sm font-medium transition-all duration-300 ${
-//           isScrolled ? "bg-gray-50 border-gray-200 text-gray-700" : "bg-transparent border-transparent text-white"
-//         }`}
-//       >
-//         {categories.map((cat, index) => (
-//           <Link
-//             key={index}
-//             to={`/category/${cat.name.toLowerCase()}`}
-//             className="cursor-pointer hover:text-[#957C3D]"
-//           >
-//             {cat.name}
-//           </Link>
-//         ))}
-//       </div>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
 
 
+// Perfect code
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   FaUserCircle,
   FaShoppingCart,
@@ -1384,7 +1151,9 @@ const Navbar = () => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+
   const navigate = useNavigate();
+  const location = useLocation();
   const profileRef = useRef(null);
 
   const categories = [
@@ -1459,13 +1228,19 @@ const Navbar = () => {
     navigate("/");
   };
 
+  // 🔹 Detect if current page is homepage
+  const isHome = location.pathname === "/";
+
+  // 🔹 Determine Navbar background
+  const navbarStyle = isHome
+    ? isScrolled
+      ? "bg-white shadow-md text-[#002349]"
+      : "bg-transparent text-white"
+    : "bg-white shadow-md text-[#002349]";
+
   return (
     <nav
-      className={`w-full fixed top-0 z-50 font-sans transition-all duration-500 ${
-        isScrolled
-          ? "bg-white shadow-md text-[#002349]" // dark text when scrolled
-          : "bg-transparent text-white" // white text on transparent bg
-      }`}
+      className={`w-full fixed top-0 z-50 font-sans transition-all duration-500 ${navbarStyle}`}
     >
       {/* 🔹 Top Navbar Section */}
       <div className="flex justify-between items-center px-4 sm:px-6 py-3">
@@ -1473,7 +1248,7 @@ const Navbar = () => {
         <Link
           to="/"
           className={`text-2xl sm:text-3xl font-extrabold tracking-wide ${
-            isScrolled ? "text-[#002349]" : "text-white"
+            isHome && !isScrolled ? "text-white" : "text-[#002349]"
           }`}
         >
           Fashion<span className="text-[#957C3D]">Hub</span>
@@ -1482,21 +1257,23 @@ const Navbar = () => {
         {/* 🔹 Search Bar */}
         <div
           className={`hidden md:flex items-center w-1/2 border rounded-full overflow-hidden shadow-sm ${
-            isScrolled ? "border-gray-300" : "border-white"
+            isHome && !isScrolled ? "border-white" : "border-gray-300"
           }`}
         >
           <input
             type="text"
             placeholder="Search for products, brands and more..."
             className={`flex-1 px-4 py-2 text-sm outline-none bg-transparent ${
-              isScrolled ? "text-[#002349] placeholder-gray-500" : "text-white placeholder-white"
+              isHome && !isScrolled
+                ? "text-white placeholder-white"
+                : "text-[#002349] placeholder-gray-500"
             }`}
           />
           <button
             className={`px-4 py-2 transition ${
-              isScrolled
-                ? "bg-[#002349] text-white hover:bg-[#957C3D]"
-                : "bg-[#957C3D] text-white"
+              isHome && !isScrolled
+                ? "bg-[#957C3D] text-white"
+                : "bg-[#002349] text-white hover:bg-[#957C3D]"
             }`}
           >
             <FaSearch />
@@ -1548,9 +1325,9 @@ const Navbar = () => {
               <Link
                 to="/login"
                 className={`px-4 py-1.5 text-sm font-medium rounded-full transition ${
-                  isScrolled
-                    ? "bg-[#002349] text-white hover:bg-[#957C3D]"
-                    : "border border-white text-white hover:bg-white hover:text-[#002349]"
+                  isHome && !isScrolled
+                    ? "border border-white text-white hover:bg-white hover:text-[#002349]"
+                    : "bg-[#002349] text-white hover:bg-[#957C3D]"
                 }`}
               >
                 Login
@@ -1558,9 +1335,9 @@ const Navbar = () => {
               <Link
                 to="/signup"
                 className={`px-4 py-1.5 text-sm font-medium rounded-full transition ${
-                  isScrolled
-                    ? "border border-[#002349] text-[#002349] hover:bg-[#002349] hover:text-white"
-                    : "border border-white text-white hover:bg-white hover:text-[#002349]"
+                  isHome && !isScrolled
+                    ? "border border-white text-white hover:bg-white hover:text-[#002349]"
+                    : "border border-[#002349] text-[#002349] hover:bg-[#002349] hover:text-white"
                 }`}
               >
                 Register
@@ -1581,9 +1358,9 @@ const Navbar = () => {
       {/* 🔹 Desktop Categories */}
       <div
         className={`hidden md:flex justify-center gap-8 py-2 border-t text-sm font-medium transition-all duration-300 ${
-          isScrolled
-            ? "bg-gray-50 border-gray-200 text-[#002349]"
-            : "bg-transparent border-transparent text-white"
+          isHome && !isScrolled
+            ? "bg-transparent border-transparent text-white"
+            : "bg-gray-50 border-gray-200 text-[#002349]"
         }`}
       >
         {categories.map((cat, index) => (
@@ -1601,3 +1378,8 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+
+

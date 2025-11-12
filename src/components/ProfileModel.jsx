@@ -170,7 +170,7 @@ function ProfileModel({ isOpen, onClose, onLogout }) {
                   <span className="text-sm font-medium">My Products</span>
                 </Link>
 
-                <Link to="/offers" onClick={onClose} className={buttonClass}>
+                <Link to="/OfferSection" onClick={onClose} className={buttonClass}>
                   <FaTags size={24} className="mb-1" />
                   <span className="text-sm font-medium">Offers</span>
                 </Link>
