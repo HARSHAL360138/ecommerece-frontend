@@ -711,6 +711,7 @@ import CreateProfile from "./profile/CreateProfile";
 import GetProfile from "./profile/GetProfile";
 import EditProfile from "./profile/EditProfile";
 import ProfileWrapper from "./profile/ProfileWrapper";
+import PlaceOrder from "./components/PlaceOrder";
 
 // ✅ ScrollToTop Component
 function ScrollToTop() {
@@ -980,6 +981,14 @@ function App() {
           element={
             <ProtectedRoute>
               <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/placeorder"
+          element={
+            <ProtectedRoute>
+              <PlaceOrder />
             </ProtectedRoute>
           }
         />
