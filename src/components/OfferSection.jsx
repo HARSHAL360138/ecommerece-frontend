@@ -201,7 +201,7 @@ const OfferSection = () => {
               </p>
 
               <Link
-                to="/products"
+                to="/all-products"
                 className="self-start bg-white text-[#002349] font-semibold px-6 py-2 rounded-full hover:bg-[#957C3D] hover:text-white hover:scale-105 transition-all shadow-md"
               >
                 Grab Deal
