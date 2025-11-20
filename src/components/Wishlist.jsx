@@ -1106,7 +1106,7 @@ function Wishlist() {
 
   // 💖 Wishlist UI
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-32">
       {/* ✅ Toast Notifications */}
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 

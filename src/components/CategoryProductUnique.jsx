@@ -332,9 +332,6 @@
 // //   <ShoppingBag size={20} /> Buy Now
 // // </motion.button>
 
-
-
-
 // //             <motion.button
 // //               whileHover={{ scale: 1.05 }}
 // //               whileTap={{ scale: 0.95 }}
@@ -446,8 +443,6 @@
 // //     </motion.div>
 // //   </div>
 // // </motion.div>
-
-
 
 // //       {/* 🛍️ Related Products Section */}
 // //       <motion.div
@@ -574,6 +569,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { fetchWithAuth } from "../refreshtoken/api";
 import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
+import ProductReviews from "../components/ProductReview";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Share2,
@@ -600,28 +596,12 @@ function CategoryProductUnique() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState([]);
-
-  // Dummy reviews (for display)
-  const reviews = [
-    {
-      name: "Amit Verma",
-      rating: 5,
-      comment: "Excellent product! Fabric quality and fit are perfect.",
-      date: "Oct 25, 2025",
-    },
-    {
-      name: "Riya Sharma",
-      rating: 4,
-      comment: "Loved the color and design. Slightly delayed delivery.",
-      date: "Oct 20, 2025",
-    },
-    {
-      name: "Mohit Singh",
-      rating: 5,
-      comment: "Totally worth the price. I’ll buy again!",
-      date: "Oct 18, 2025",
-    },
-  ];
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [reviewName, setReviewName] = useState("");
+  const [reviewText, setReviewText] = useState("");
+  const [backendReviews, setBackendReviews] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const userId = localStorage.getItem("userId"); // Make sure you store userId at login
 
   // Fetch product details
   useEffect(() => {
@@ -640,6 +620,22 @@ function CategoryProductUnique() {
       }
     };
     if (id) fetchProduct();
+  }, [id]);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch(
+        `https://ecommerce-backend-y1bv.onrender.com/api/review/product/${id}`
+      );
+      const data = await res.json();
+      setBackendReviews(data);
+    } catch (err) {
+      console.log("Review fetch failed", err);
+    }
+  };
+
+  useEffect(() => {
+    if (id) fetchReviews();
   }, [id]);
 
   // Fetch related products
@@ -692,7 +688,7 @@ function CategoryProductUnique() {
 
     try {
       const data = await fetchWithAuth(
-        "https://ecommerce-backend-y1bv.onrender.com/api/cart/add",
+        "https://ecommerce-backend-y1bv.onrender.com/api/review",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -803,6 +799,41 @@ function CategoryProductUnique() {
     product?.category?.toLowerCase()?.includes(keyword)
   );
 
+  const handleSubmitReview = async () => {
+    if (!selectedRating || !reviewText) {
+      toast.warn("Please provide rating and comment!");
+      return;
+    }
+
+    try {
+      const res = await fetchWithAuth(
+        "https://ecommerce-backend-y1bv.onrender.com/api/review",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            product: id, // product id
+            rating: selectedRating, // user rating
+            comment: reviewText, // user comment
+          }),
+        }
+      );
+
+      if (res.success) {
+        toast.success("⭐ Review submitted!");
+        setSelectedRating(0);
+        setReviewName("");
+        setReviewText("");
+        fetchReviews(); // refresh reviews
+      } else {
+        toast.error(res.message || "Failed to submit review");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("❌ Something went wrong");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-10 text-[#002349]">
       <ToastContainer position="top-center" autoClose={1500} />
@@ -816,7 +847,10 @@ function CategoryProductUnique() {
           <ArrowLeft size={18} /> Back
         </button>
 
-        <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
+        <div
+          className="relative cursor-pointer"
+          onClick={() => navigate("/cart")}
+        >
           <ShoppingCart size={28} className="text-[#002349]" />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-[#957C3D] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -865,21 +899,6 @@ function CategoryProductUnique() {
         <div className="space-y-5 text-[#002349]">
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-gray-600">{product.description}</p>
-
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                size={20}
-                fill={i < Math.round(product.rating || 4) ? "#FFD700" : "none"}
-                stroke="#957C3D"
-              />
-            ))}
-            <span className="text-sm text-gray-500 ml-2">
-              {product.rating || 4.3} (3 reviews)
-            </span>
-          </div>
 
           {/* Price */}
           <div className="text-2xl font-semibold">
@@ -943,7 +962,9 @@ function CategoryProductUnique() {
               <Tag size={18} className="text-[#957C3D]" /> Available Offers
             </p>
             <ul className="list-disc ml-6 text-sm text-gray-700 space-y-1">
-              <li>Get 10% off with code <b>NEW10</b></li>
+              <li>
+                Get 10% off with code <b>NEW10</b>
+              </li>
               <li>Flat ₹100 off on prepaid orders above ₹999</li>
               <li>5% cashback with XYZ Bank Credit Card</li>
             </ul>
@@ -990,100 +1011,8 @@ function CategoryProductUnique() {
         </div>
       </div>
 
-      {/* ⭐ Rating & Reviews Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="mt-16"
-      >
-        <h2 className="text-2xl font-bold text-center text-[#002349] mb-8">
-          Ratings & Reviews
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side – Rating Summary */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-[#fdfcf9] border border-[#957C3D]/30 p-6 rounded-2xl shadow-md flex flex-col justify-center items-center text-center"
-          >
-            <p className="text-6xl font-extrabold text-[#957C3D]">
-              {product.rating || 4.3}
-            </p>
-            <div className="flex justify-center gap-1 mt-2 mb-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  size={22}
-                  fill={i < Math.round(product.rating || 4.3) ? "#FFD700" : "none"}
-                  stroke="#957C3D"
-                />
-              ))}
-            </div>
-            <p className="text-sm text-gray-600 mb-6">
-              Based on {reviews.length} verified reviews
-            </p>
-            {/* Progress Bars */}
-            <div className="w-full space-y-2">
-              {[5, 4, 3, 2, 1].map((star) => {
-                const count = reviews.filter((r) => r.rating === star).length;
-                const percent = Math.round((count / reviews.length) * 100);
-                return (
-                  <div key={star} className="flex items-center gap-3">
-                    <span className="w-6 text-sm font-medium">{star}★</span>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${percent}%` }}
-                        transition={{ duration: 0.8 }}
-                        className="h-2 bg-[#957C3D] rounded-full"
-                      ></motion.div>
-                    </div>
-                    <span className="text-sm text-gray-600 w-10 text-right">
-                      {percent}%
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </motion.div>
-          {/* Right Side – Individual Reviews */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="space-y-4 max-h-[400px] overflow-y-auto pr-2"
-          >
-            {reviews.map((r, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white border border-[#957C3D]/30 p-4 rounded-xl shadow-sm transition-all hover:shadow-lg"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <User className="text-[#957C3D]" size={18} />
-                    <p className="font-semibold text-sm">{r.name}</p>
-                  </div>
-                  <p className="text-xs text-gray-400">{r.date}</p>
-                </div>
-                <div className="flex items-center gap-1 mb-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      fill={i < r.rating ? "#FFD700" : "none"}
-                      stroke="#957C3D"
-                    />
-                  ))}
-                </div>
-                <p className="text-gray-700 text-sm">{r.comment}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </motion.div>
+      {/* Below Product Details */}
+      <ProductReviews productId={id} />
 
       {/* 🛍️ Related Products Section */}
       <motion.div
